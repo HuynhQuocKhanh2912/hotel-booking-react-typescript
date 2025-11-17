@@ -40,8 +40,8 @@ const UsersManagement = () => {
   const [filteredUsers, setFilteredUsers] = useState<UserItem[] | null>(null);
   const [detailUser, setDetailUser] = useState<UserItem | null>(null);
   const [mode, setMode] = useState<"add" | "edit" | "detail" | null>(null);
+  
   // API
-
   const { data: dataUserListAll } = useUsersListAllQuery();
   const { data: dataUserList, isLoading: isLoadingList } = useUsersListQuery(
     pagiCurrent,

@@ -18,12 +18,13 @@ export interface UserItem {
   role: string;
 }
 
-export interface UserItemPut {
+export interface UserItemAdd {
   id: number;
-  name: string;
-  email: string;
-  phone: string;
-  birthday: string;
-  gender: boolean;
-  role: string;
+  name: string,
+  email: string,
+  password: string,
+  phone: string,
+  birthday: string,
+  gender: true,
+  role: string
 }
