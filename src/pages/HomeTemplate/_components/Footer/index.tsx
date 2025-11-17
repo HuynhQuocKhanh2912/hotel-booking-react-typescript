@@ -15,7 +15,7 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="text-lg font-bold mb-4">Liên kết</h4>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-gray-500">
               <li>
                 <Link to="#" className="hover:text-white">
                   Về chúng tôi
