@@ -1,41 +1,58 @@
-import React from "react";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default function PaginationLayout() {
+interface PaginationProps {
+  pageIndex: number;
+  pageSize: number;
+  totalRow: number;
+  onPageChange: (page: number) => void;
+}
+
+export default function PaginationLayout({
+  pageIndex,
+  pageSize,
+  totalRow,
+  onPageChange,
+}: PaginationProps) {
+  const totalPages = Math.ceil(totalRow / pageSize);
+
+  if (totalPages <= 1) return null;
+
   return (
-    <div className="mt-8">
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
+    <Pagination className="mt-6">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => pageIndex > 1 && onPageChange(pageIndex - 1)}
+          />
+        </PaginationItem>
+
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <PaginationItem key={i}>
+            <PaginationLink
+              className="cursor-pointer"
+              isActive={i + 1 === pageIndex}
+              onClick={() => onPageChange(i + 1)}
+            >
+              {i + 1}
             </PaginationLink>
           </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-    </div>
+        ))}
+
+        <PaginationItem>
+          <PaginationNext
+            onClick={() =>
+              pageIndex < totalPages && onPageChange(pageIndex + 1)
+            }
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 }

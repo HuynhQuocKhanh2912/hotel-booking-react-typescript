@@ -2,7 +2,7 @@ export interface PaginationRoom<T> {
   pageIndex: number;
   pageSize: number;
   totalRow: number;
-  keywords: null;
+  keywords: string | null;
   data: T;
 }
 export interface RoomItems {
