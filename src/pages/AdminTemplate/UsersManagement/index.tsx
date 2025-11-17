@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import {
   Search,
   Plus,
@@ -32,38 +33,50 @@ import Loading from "../_Component/Loading";
 import { Dialog } from "@/components/ui/dialog";
 import UserDetailPopup from "./UserDetailPopup";
 import UserPopup from "./UserPopup";
+import { useDebounce } from "@/hooks/useDebounce";
+
+//Type Filters and Actions
+type Actions = {
+  fsearch: string;
+  fselect: string;
+};
+
 const UsersManagement = () => {
+  const itemUserNumber: number = 9;
   // State
-  const [viewMode, setViewMode] = useState("list"); //grid
+  const [viewMode, setViewMode] = useState<"grid | list" | string>("grid"); 
   const [pagiCurrent, setPagiCurrent] = useState(1);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState<UserItem[] | null>(null);
+  const [listUsers, setListUsers] = useState<UserItem[] | null>(null);
   const [detailUser, setDetailUser] = useState<UserItem | null>(null);
   const [mode, setMode] = useState<"add" | "edit" | "detail" | null>(null);
   
+
+  // Form
+  const { register, control, watch } = useForm<Actions>({
+    defaultValues: {
+      fsearch: "",
+      fselect: "ALL",
+    },
+  });
+
+  const watchSearch = watch("fsearch");
+  const watchSelect = watch("fselect");
+
+  const keyDebounce = useDebounce(watchSearch, 500);
   // API
   const { data: dataUserListAll } = useUsersListAllQuery();
   const { data: dataUserList, isLoading: isLoadingList } = useUsersListQuery(
     pagiCurrent,
-    9
+    itemUserNumber,
+    keyDebounce
   );
 
   useEffect(() => {
-    setFilteredUsers(dataUserList?.data ?? []);
-  }, [dataUserList, pagiCurrent]);
-
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [filterRole, setFilterRole] = useState("all");
-  // const filteredUsers = users.filter((user) => {
-  //   const matchesSearch =
-  //     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     (user.phone && user.phone.includes(searchTerm));
-
-  //   const matchesRole = filterRole === "all" || user.role === filterRole;
-
-  //   return matchesSearch && matchesRole;
-  // });
+    const list = dataUserList?.data ?? [];
+    const result = watchSelect === "ALL" ? list : list.filter(f => f.role.toUpperCase() === watchSelect.toUpperCase())
+    setListUsers(result);
+  }, [dataUserList, pagiCurrent , watchSelect]);
 
   const handleUserDetail = (user: UserItem) => {
     setDetailUser(user);
@@ -133,8 +146,8 @@ const UsersManagement = () => {
   return (
     <>
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 animate-fade-in-up gap-6 md:gap-3 lg:gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm p-6 md:p-4 lg:p-6 border border-slate-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">Tổng tài khoản</p>
@@ -145,7 +158,7 @@ const UsersManagement = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div className="bg-white rounded-xl shadow-sm p-6 md:p-4 lg:p-6 border border-slate-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">Admin</p>
@@ -158,7 +171,7 @@ const UsersManagement = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div className="bg-white rounded-xl shadow-sm p-6 md:p-4 lg:p-6 border border-slate-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">User</p>
@@ -169,7 +182,7 @@ const UsersManagement = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div className="bg-white rounded-xl shadow-sm p-6 md:p-4 lg:p-6 border border-slate-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">Nam</p>
@@ -182,7 +195,7 @@ const UsersManagement = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div className="bg-white rounded-xl shadow-sm p-6 md:p-4 lg:p-6 border border-slate-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-600 mb-1">Nữ</p>
@@ -198,7 +211,7 @@ const UsersManagement = () => {
       </div>
 
       {/* Filters and Actions */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-slate-200">
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-slate-200 animate-fade-in-up">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex flex-1 gap-4 w-full md:w-auto">
             {/* Search Input */}
@@ -206,24 +219,33 @@ const UsersManagement = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
               <Input
                 type="text"
-                placeholder="Tìm kiếm theo tên hoặc email..."
+                placeholder="Tìm kiếm theo tên..."
                 className="pl-10 h-11"
+                {...register("fsearch")}
               />
             </div>
 
             {/* Filter Select */}
             <div className="relative w-[180px] max-sm:w-full">
               <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
-              <Select defaultValue="all">
-                <SelectTrigger className="pl-10 !h-11 w-full">
-                  <SelectValue placeholder="Tất cả vai trò" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả vai trò</SelectItem>
-                  <SelectItem value="admin">Quản lí</SelectItem>
-                  <SelectItem value="user">Người dùng</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="fselect"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="pl-10 !h-11 w-full">
+                        <SelectValue placeholder="Tất cả vai trò" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ALL">Tất cả vai trò</SelectItem>
+                        <SelectItem value="ADMIN">Quản lí</SelectItem>
+                        <SelectItem value="USER">Người dùng</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  );
+                }}
+              />
             </div>
           </div>
 
@@ -256,8 +278,8 @@ const UsersManagement = () => {
 
       {/* Users Table && Grid */}
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUsers?.map((user) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
+          {listUsers?.map((user) => {
             const roleBadge = getRoleBadge(user.role);
             return (
               <div
@@ -343,9 +365,11 @@ const UsersManagement = () => {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200">
+        <div
+          className={`bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200 ${listUsers?.length === 0 && "mb-4"}`}
+        >
           <div className="overflow-x-auto">
-            <table className="w-full table-fixed">
+            <table className="w-full table-fixed min-w-[1200px]">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase w-[24%]">
@@ -363,13 +387,13 @@ const UsersManagement = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase ">
                     Vai trò
                   </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase w-[8%]">
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-600 uppercase w-[10%]">
                     Thao tác
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {filteredUsers?.map((user) => {
+                {listUsers?.map((user) => {
                   const roleBadge = getRoleBadge(user.role);
 
                   return (
@@ -446,10 +470,17 @@ const UsersManagement = () => {
           </div>
         </div>
       )}
+      {/* Loading */}
       {isLoadingList && <Loading />}
 
+      {listUsers?.length === 0 && (
+        <p className="text-center p-2 text-gray-400">
+          Không tìm thấy kết quả "{keyDebounce}"
+        </p>
+      )}
+
       {/* Pagination */}
-      {infoPagi.pageIndex > 0 && (
+      {infoPagi.totalRow > itemUserNumber && (
         <div className="w-full mt-6">
           <PaginationAdmin infoPagi={infoPagi} handlePagi={handlePagi} />
         </div>
