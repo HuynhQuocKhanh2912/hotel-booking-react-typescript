@@ -17,3 +17,13 @@ export interface UserItem {
   gender: boolean;
   role: string;
 }
+
+export interface UserItemPut {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  birthday: string;
+  gender: boolean;
+  role: string;
+}
