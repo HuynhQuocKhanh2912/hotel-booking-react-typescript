@@ -1,6 +1,6 @@
-import type { PagiUser, UserItem } from "@/interfaces/user.interface";
-import { getUsersListAllApi, getUsersListApi } from "@/services/users.api";
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import type { PagiUser, UserItem, UserItemAdd } from "@/interfaces/user.interface";
+import { getUsersListAllApi, getUsersListApi, postUsersApi } from "@/services/users.api";
+import { useMutation, useQuery, type UseQueryOptions } from "@tanstack/react-query";
 
 export const useUsersListAllQuery = () =>
   useQuery({
@@ -18,4 +18,15 @@ export const useUsersListQuery = (
     queryKey: ["users-list", pageIndex, keyword],
     queryFn: () => getUsersListApi(pageIndex, pageSize, keyword),
     ...optional,
+  });
+
+export const useUsersAddQuery = (data: UserItemAdd) =>
+  useMutation({
+    mutationFn: () => postUsersApi(data),
+    onSuccess: () => {
+      console.log('asdasd')
+    },
+    onError: () => {
+
+    }
   });

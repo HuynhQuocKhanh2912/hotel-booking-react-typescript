@@ -1,5 +1,5 @@
 import type { BaseApiResponse } from "@/interfaces/base.interface";
-import type { PagiUser, UserItem } from "@/interfaces/user.interface";
+import type { PagiUser, UserItem, UserItemAdd } from "@/interfaces/user.interface";
 import api from "./api";
 
 export const getUsersListAllApi = async () => {
@@ -11,7 +11,6 @@ export const getUsersListAllApi = async () => {
     throw error;
   }
 };
-
 
 export const getUsersListApi = async (
   pageIndex: number,
@@ -26,6 +25,16 @@ export const getUsersListApi = async (
     return response.data.content;
   } catch (error) {
     console.log("🎄 ~ usersListApi ~ error:", error);
+    throw error;
+  }
+};
+
+export const postUsersApi = async (data: UserItemAdd) => {
+  try {
+    const response = await api.post<BaseApiResponse<UserItemAdd>>(`users/`, data);
+    return response.data.content;
+  } catch (error) {
+    console.log("🎄 ~ postUsersApi ~ error:", error)
     throw error;
   }
 };

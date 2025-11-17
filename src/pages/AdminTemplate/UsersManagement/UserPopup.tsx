@@ -26,43 +26,52 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChevronDownIcon, TriangleAlert } from "lucide-react";
+// import { useUsersAddQuery } from "@/hooks/useUserQuery";
 
 const schema = z.object({
-  fullname: z.string().nonempty("Vui lòng nhập họ tên"),
+  id: z.number(),
+  name: z.string().nonempty("Vui lòng nhập họ tên"),
   email: z.string().nonempty("Vui lòng nhập đúng định dạng @"),
   phone: z.string().nonempty("Vui lòng nhập số điện thoại"),
   birthday: z.string().nonempty("Vui lòng nhập ngày sinh"),
   password: z.string().nonempty("Vui lòng nhập mật khẩu"),
-  sex: z.union([z.boolean(), z.undefined()]).refine((val) => val !== undefined, {
-    message: "Vui lòng chọn giới tính",
-  }),
+  gender: z
+    .union([z.boolean(), z.undefined()])
+    .refine((val) => val !== undefined, {
+      message: "Vui lòng chọn giới tính",
+    }),
   role: z.string().nonempty("Vui lòng chọn vai trò"),
 });
 
-// type UserAdd = z.infer<typeof schema>;
+type UserAdd = z.infer<typeof schema>;
 
 export default function UserPopup() {
   const [openBirthday, setOpenBirthday] = useState(false);
+  // Api
+  // const { mutate: mutateAddUser } = useUsersAddQuery();
 
+  // Form
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<UserAdd>({
     defaultValues: {
-      fullname: "",
+      id: 0,
+      name: "",
       email: "",
       phone: "",
       birthday: "",
       password: "",
-      sex: undefined,
+      gender: undefined,
       role: "",
     },
     resolver: zodResolver(schema),
   });
-  const onSubmit = (data) => {
+  const onSubmit = (data: UserAdd) => {
     console.log("🎄 ~ onSubmit ~ data:", data);
+    // mutateAddUser(data);
   };
 
   return (
@@ -75,19 +84,14 @@ export default function UserPopup() {
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="fullname" className="text-slate-700 mb-2">
+              <Label htmlFor="name" className="text-slate-700 mb-2">
                 Họ tên
               </Label>
-              <Input
-                type="fullname"
-                id="fullname"
-                className="w-full h-11"
-                {...register("fullname")}
-              />
-              {errors.fullname && (
+              <Input id="name" className="w-full h-11" {...register("name")} />
+              {errors.name && (
                 <p className="text-red-300 text-sm mt-1.5 flex gap-1 items-center">
                   <TriangleAlert className="size-3.5 animate-fade-in" />
-                  {errors.fullname.message}
+                  {errors.name.message}
                 </p>
               )}
             </div>
@@ -130,7 +134,6 @@ export default function UserPopup() {
                 SĐT
               </Label>
               <Input
-                type="phone"
                 id="phone"
                 className="w-full h-11"
                 {...register("phone")}
@@ -198,22 +201,26 @@ export default function UserPopup() {
               )}
             </div>
             <div>
-              <Label htmlFor="sex" className="text-slate-700 mb-2">
+              <Label htmlFor="gender" className="text-slate-700 mb-2">
                 Giới tính
               </Label>
               <Controller
-                name="sex"
+                name="gender"
                 control={control}
                 defaultValue={undefined}
                 render={({ field }) => {
                   return (
                     <Select
                       onValueChange={(val) => field.onChange(val === "Nam")}
-                      value={field.value === undefined ? undefined
-                        : field.value ? "Nam" : "Nữ"}
-                      // value={field.value ? "Nam" : "Nữ"}
+                      value={
+                        field.value === undefined
+                          ? undefined
+                          : field.value
+                            ? "Nam"
+                            : "Nữ"
+                      }
                     >
-                      <SelectTrigger className="w-full h-11!" id="sex">
+                      <SelectTrigger className="w-full h-11!" id="gender">
                         <SelectValue placeholder="Chọn giới tính" />
                       </SelectTrigger>
                       <SelectContent>
@@ -226,10 +233,10 @@ export default function UserPopup() {
                   );
                 }}
               />
-              {errors.sex && (
+              {errors.gender && (
                 <p className="text-red-300 text-sm mt-1.5 flex gap-1 items-center">
                   <TriangleAlert className="size-3.5 animate-fade-in" />
-                  {errors.sex.message}
+                  {errors.gender.message}
                 </p>
               )}
             </div>
