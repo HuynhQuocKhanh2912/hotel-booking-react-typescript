@@ -56,7 +56,7 @@ export default function UserDetailPopup({ detailUser }: detailUser) {
 
   return (
     <DialogContent className="sm:max-w-2xl p-0 border-0 rounded-none bg-transparent">
-      <DialogTitle className="hidden">asdasd</DialogTitle>
+      <DialogTitle className="hidden">Popup Detail</DialogTitle>
       <div className="bg-white rounded-xl shadow-xl w-full">
         <div className="relative h-32 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-t-xl">
           {/* <button

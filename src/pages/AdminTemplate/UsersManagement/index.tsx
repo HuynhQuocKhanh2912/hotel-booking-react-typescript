@@ -31,6 +31,7 @@ import { PaginationAdmin } from "../_Component/PaginationAdmin";
 import Loading from "../_Component/Loading";
 import { Dialog } from "@/components/ui/dialog";
 import UserDetailPopup from "./UserDetailPopup";
+import UserPopup from "./UserPopup";
 const UsersManagement = () => {
   // State
   const [viewMode, setViewMode] = useState("list"); //grid
@@ -68,6 +69,11 @@ const UsersManagement = () => {
     setDetailUser(user);
     setShowDetailModal(true);
     setMode("detail");
+  };
+
+  const handleUserAdd = () => {
+    setMode("add");
+    setShowDetailModal(true);
   };
 
   // Style css && text && icon
@@ -237,7 +243,10 @@ const UsersManagement = () => {
                 List
               </button>
             </div>
-            <Button className="flex items-center gap-2 h-11 bg-blue-600 hover:bg-blue-700 shadow-sm">
+            <Button
+              className="flex items-center gap-2 h-11 bg-blue-600 hover:bg-blue-700 shadow-sm"
+              onClick={handleUserAdd}
+            >
               <Plus className="w-4 h-4" />
               Thêm người dùng
             </Button>
@@ -450,6 +459,7 @@ const UsersManagement = () => {
         onOpenChange={(open) => setShowDetailModal(open)}
       >
         {mode === "detail" && <UserDetailPopup detailUser={detailUser} />}
+        {mode === "add" && <UserPopup />}
       </Dialog>
     </>
   );
