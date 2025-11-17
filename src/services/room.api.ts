@@ -5,7 +5,7 @@ export const getRoomListApi = async (
   pageIndex: number,
   pageSize: number,
   keyword?: string
-): Promise<PaginationRoom<RoomItems[]> | undefined> => {
+): Promise<PaginationRoom<RoomItems[]>> => {
   try {
     const key = keyword ? `&keyword=${keyword}` : "";
     const response = await api.get<

@@ -17,21 +17,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
-import PaginationLayout from "@/layouts/Pagination";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getLocation } from "@/services/location.api";
 import { Card, CardContent } from "@/components/ui/card";
 import { getListRoomByLocation, getRoomListApi } from "@/services/room.api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import PaginationLayout from "@/layouts/Pagination";
+import type { Location } from "@/interfaces/location.interface";
+import type { RoomItems } from "@/interfaces/room.interface";
 
 export default function RoomListing() {
   const [province, setProvince] = useState<string>("");
-  const [filteredLocation, setFilterdLocation] = useState<any[]>([]);
+  const [filteredLocation, setFilterdLocation] = useState<Location[]>([]);
   const [selectID, getSelectID] = useState<string>("");
+  //set pagination
+  const [pageIndex, setPageIndex] = useState(1);
+  const pageSize = 9;
 
-  const { data: listRooms = [] } = useQuery({
-    queryKey: ["getListRoom"],
-    queryFn: () => getRoomListApi(1, 9),
+  const { data: listRooms } = useQuery({
+    queryKey: ["getListRoom", pageIndex, pageSize],
+    queryFn: () => getRoomListApi(pageIndex, pageSize),
+    placeholderData: keepPreviousData,
   });
 
   // Get Province
@@ -40,7 +46,7 @@ export default function RoomListing() {
     queryFn: getLocation,
   });
 
-  const { data: listRoomsLocation = [] } = useQuery({
+  const { data: listRoomsLocation } = useQuery({
     queryKey: ["getListRoomsLocation", selectID],
     queryFn: () => getListRoomByLocation(selectID),
     enabled: !!selectID,
@@ -56,9 +62,7 @@ export default function RoomListing() {
   };
 
   const roomsToRender = selectID
-    ? Array.isArray(listRoomsLocation)
-      ? listRoomsLocation
-      : [listRoomsLocation]
+    ? (listRoomsLocation ?? [])
     : (listRooms?.data ?? []);
 
   return (
@@ -126,7 +130,10 @@ export default function RoomListing() {
                   <SelectContent>
                     <SelectGroup>
                       {filteredLocation.map((location) => (
-                        <SelectItem key={location.id} value={location.id}>
+                        <SelectItem
+                          key={location.id}
+                          value={location.id.toString()}
+                        >
                           {location.tenViTri}
                         </SelectItem>
                       ))}
@@ -138,7 +145,7 @@ export default function RoomListing() {
           </CardContent>
         </Card>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roomsToRender.map((room) => (
+          {roomsToRender.map((room: RoomItems) => (
             <div
               key={room.id}
               className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
@@ -279,7 +286,12 @@ export default function RoomListing() {
             </div>
           ))}
         </div>
-        <PaginationLayout />
+        <PaginationLayout
+          pageSize={pageSize}
+          pageIndex={pageIndex}
+          totalRow={listRooms?.totalRow ?? 0}
+          onPageChange={(page) => setPageIndex(page)}
+        />
       </div>
     </div>
   );
