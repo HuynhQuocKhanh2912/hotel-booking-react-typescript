@@ -257,9 +257,7 @@ const BookingManagement = () => {
               </Select>
             </div>
           </div>
-          <Button
-            className="flex items-center gap-2  h-11 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
-          >
+          <Button className="flex items-center gap-2  h-11 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm">
             <Plus className="w-4 h-4" />
             Thêm đặt phòng
           </Button>
@@ -380,9 +378,7 @@ const BookingManagement = () => {
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                        >
+                        <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

@@ -1,7 +1,6 @@
 import { getLocation } from "@/services/location.api";
 import { useQuery } from "@tanstack/react-query";
 import { Heart } from "lucide-react";
-import React from "react";
 
 export default function LocationPage() {
   const { data: location } = useQuery({
