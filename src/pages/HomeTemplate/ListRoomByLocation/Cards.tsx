@@ -21,7 +21,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getLocation } from "@/services/location.api";
 import { Card, CardContent } from "@/components/ui/card";
 import { getListRoomByLocation, getRoomListApi } from "@/services/room.api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PaginationLayout from "@/layouts/Pagination";
 import type { Location } from "@/interfaces/location.interface";
 import type { RoomItems } from "@/interfaces/room.interface";
@@ -33,6 +33,8 @@ export default function RoomListing() {
   //set pagination
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 9;
+
+  const target = document.getElementById("toSection");
 
   const { data: listRooms } = useQuery({
     queryKey: ["getListRoom", pageIndex, pageSize],
@@ -65,6 +67,13 @@ export default function RoomListing() {
   const roomsToRender = selectID
     ? (listRoomsLocation ?? [])
     : (listRooms?.data ?? []);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [pageIndex]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
@@ -145,7 +154,10 @@ export default function RoomListing() {
             </div>
           </CardContent>
         </Card>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          id="toSection"
+        >
           {roomsToRender.map((room: RoomItems) => (
             <div
               key={room.id}
