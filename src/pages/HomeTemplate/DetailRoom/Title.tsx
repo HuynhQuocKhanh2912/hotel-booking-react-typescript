@@ -3,12 +3,12 @@ import {
   Users,
   Bed,
   Bath,
-  Wifi,
-  Tv,
-  Wind,
-  Car,
-  Waves,
-  UtensilsCrossed,
+  // Wifi,
+  // Tv,
+  // Wind,
+  // Car,
+  // Waves,
+  // UtensilsCrossed,
   Star,
   MapPin,
 } from "lucide-react";
@@ -42,44 +42,44 @@ export default function Title() {
 
   const room = roomData.content;
 
-  const amenities = [
-    {
-      icon: Wifi,
-      label: "Wifi miễn phí",
-      available: room.wifi,
-      description: "Tốc độ cao 100Mbps",
-    },
-    {
-      icon: Tv,
-      label: "TV & Netflix",
-      available: room.tivi,
-      description: "Smart TV 4K",
-    },
-    {
-      icon: Wind,
-      label: "Điều hòa",
-      available: room.dieuHoa,
-      description: "Nhiệt độ thoải mái",
-    },
-    {
-      icon: UtensilsCrossed,
-      label: "Bếp đầy đủ",
-      available: room.bep,
-      description: "Dụng cụ nấu ăn",
-    },
-    {
-      icon: Car,
-      label: "Đỗ xe miễn phí",
-      available: room.doXe,
-      description: "Chỗ đỗ an toàn",
-    },
-    {
-      icon: Waves,
-      label: "Hồ bơi",
-      available: room.hoBoi,
-      description: "Hồ bơi riêng",
-    },
-  ];
+  // const amenities = [
+  //   {
+  //     icon: Wifi,
+  //     label: "Wifi miễn phí",
+  //     available: room.wifi,
+  //     description: "Tốc độ cao 100Mbps",
+  //   },
+  //   {
+  //     icon: Tv,
+  //     label: "TV & Netflix",
+  //     available: room.tivi,
+  //     description: "Smart TV 4K",
+  //   },
+  //   {
+  //     icon: Wind,
+  //     label: "Điều hòa",
+  //     available: room.dieuHoa,
+  //     description: "Nhiệt độ thoải mái",
+  //   },
+  //   {
+  //     icon: UtensilsCrossed,
+  //     label: "Bếp đầy đủ",
+  //     available: room.bep,
+  //     description: "Dụng cụ nấu ăn",
+  //   },
+  //   {
+  //     icon: Car,
+  //     label: "Đỗ xe miễn phí",
+  //     available: room.doXe,
+  //     description: "Chỗ đỗ an toàn",
+  //   },
+  //   {
+  //     icon: Waves,
+  //     label: "Hồ bơi",
+  //     available: room.hoBoi,
+  //     description: "Hồ bơi riêng",
+  //   },
+  // ];
 
   return (
     <div className="bg-white rounded-3xl p-8 shadow-xl">

@@ -38,6 +38,7 @@ export default function RoomListing() {
     queryKey: ["getListRoom", pageIndex, pageSize],
     queryFn: () => getRoomListApi(pageIndex, pageSize),
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: true,
   });
 
   // Get Province
