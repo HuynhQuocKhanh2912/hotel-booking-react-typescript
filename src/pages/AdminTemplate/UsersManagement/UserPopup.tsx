@@ -26,20 +26,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChevronDownIcon, TriangleAlert } from "lucide-react";
-// import { useUsersAddQuery } from "@/hooks/useUserQuery";
+import { useUsersAddQuery } from "@/hooks/useUserQuery";
 
 const schema = z.object({
   id: z.number(),
   name: z.string().nonempty("Vui lòng nhập họ tên"),
   email: z.string().nonempty("Vui lòng nhập đúng định dạng @"),
-  phone: z.string().nonempty("Vui lòng nhập số điện thoại"),
+  phone: z.string().regex(/^[0-9]+$/, "Vui lòng nhập số"),
   birthday: z.string().nonempty("Vui lòng nhập ngày sinh"),
   password: z.string().nonempty("Vui lòng nhập mật khẩu"),
-  gender: z
-    .union([z.boolean(), z.undefined()])
-    .refine((val) => val !== undefined, {
-      message: "Vui lòng chọn giới tính",
-    }),
+  // gender: z
+  //   .union([z.boolean(), z.undefined()])
+  //   .refine((val) => val !== undefined, {
+  //     message: "Vui lòng chọn giới tính",
+  //   }),
+  gender: z.boolean().optional().refine((val) => val !== undefined, {
+    message: "Vui lòng chọn giới tính",
+}),
   role: z.string().nonempty("Vui lòng chọn vai trò"),
 });
 
@@ -48,7 +51,7 @@ type UserAdd = z.infer<typeof schema>;
 export default function UserPopup() {
   const [openBirthday, setOpenBirthday] = useState(false);
   // Api
-  // const { mutate: mutateAddUser } = useUsersAddQuery();
+  const { mutate: mutateUserAdd } = useUsersAddQuery();
 
   // Form
   const {
@@ -71,7 +74,10 @@ export default function UserPopup() {
   });
   const onSubmit = (data: UserAdd) => {
     console.log("🎄 ~ onSubmit ~ data:", data);
-    // mutateAddUser(data);
+    mutateUserAdd({
+      ...data,
+      gender: data.gender as boolean,
+    });
   };
 
   return (

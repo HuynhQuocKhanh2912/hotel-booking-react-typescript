@@ -20,11 +20,11 @@ export interface UserItem {
 
 export interface UserItemAdd {
   id: number;
-  name: string,
-  email: string,
-  password: string,
-  phone: string,
-  birthday: string,
-  gender: true,
-  role: string
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  birthday: string;
+  gender: boolean;
+  role: string;
 }
