@@ -5,7 +5,7 @@ import Desc from "./Desc";
 import Amenities from "./Amenities";
 import Rules from "./Rules";
 import BookingForm from "./BookingForm";
-import Comments from "./Comments";
+// import Comments from "./Comments";
 
 export default function RoomDetail() {
   return (
@@ -22,9 +22,7 @@ export default function RoomDetail() {
           </div>
           <BookingForm />
         </div>
-        <div className="mt-8">
-          <Comments />
-        </div>
+        <div className="mt-8">{/* <Comments /> */}</div>
       </div>
     </div>
   );
