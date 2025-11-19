@@ -25,7 +25,11 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useUsersListAllQuery, useUsersListQuery } from "@/hooks/useUserQuery";
+import {
+  useUsersDeleteQuery,
+  useUsersListAllQuery,
+  useUsersListQuery,
+} from "@/hooks/useUserQuery";
 import type { UserItem } from "@/interfaces/user.interface";
 import { formatDateSafe } from "@/hooks/useFormatDateSafe";
 import { PaginationAdmin } from "../_Component/PaginationAdmin";
@@ -45,7 +49,7 @@ type Actions = {
 const UsersManagement = () => {
   const itemUserNumber: number = 9;
   // Store
-  const { isModal, setIsModal } = useUserAdminStore();
+  const { isModal, setIsModal, setIdUser } = useUserAdminStore();
 
   // State
   const [viewMode, setViewMode] = useState<"grid | list" | string>("grid");
@@ -73,6 +77,7 @@ const UsersManagement = () => {
     itemUserNumber,
     keyDebounce
   );
+  const { mutate: mutateUserDelete } = useUsersDeleteQuery();
 
   useEffect(() => {
     const list = dataUserList?.data ?? [];
@@ -89,11 +94,16 @@ const UsersManagement = () => {
     setDetailUser(user);
     setIsModal();
     setMode("detail");
+    setIdUser(user.id);
   };
 
   const handleUserAdd = () => {
     setMode("add");
     setIsModal();
+  };
+
+  const handleUserDelete = (id: number) => {
+    mutateUserDelete(id);
   };
 
   // Style css && text && icon
@@ -361,7 +371,10 @@ const UsersManagement = () => {
                       <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleUserDelete(user.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -492,10 +505,7 @@ const UsersManagement = () => {
           <PaginationAdmin infoPagi={infoPagi} handlePagi={handlePagi} />
         </div>
       )}
-      <Dialog
-        open={isModal}
-        onOpenChange={(open) => setIsModal(open)}
-      >
+      <Dialog open={isModal} onOpenChange={() => setIsModal()}>
         {mode === "detail" && <UserDetailPopup detailUser={detailUser} />}
         {mode === "add" && <UserPopup />}
       </Dialog>

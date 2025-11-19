@@ -38,3 +38,12 @@ export const postUsersApi = async (data: UserItemAdd) => {
     throw error;
   }
 };
+
+export const deleteUsersApi = async (id: number) => {
+  try {
+    await api.delete(`users?id=${id}`);
+  } catch (error) {
+    console.log("🎄 ~ deleteUsersApi ~ error:", error)
+    throw error;
+  }
+};
