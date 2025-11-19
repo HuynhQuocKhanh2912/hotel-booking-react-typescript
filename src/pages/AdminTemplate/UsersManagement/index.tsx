@@ -34,6 +34,7 @@ import { Dialog } from "@/components/ui/dialog";
 import UserDetailPopup from "./UserDetailPopup";
 import UserPopup from "./UserPopup";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useUserAdminStore } from "@/stores/userManagement.store";
 
 //Type Filters and Actions
 type Actions = {
@@ -43,14 +44,15 @@ type Actions = {
 
 const UsersManagement = () => {
   const itemUserNumber: number = 9;
+  // Store
+  const { isModal, setIsModal } = useUserAdminStore();
+
   // State
-  const [viewMode, setViewMode] = useState<"grid | list" | string>("grid"); 
+  const [viewMode, setViewMode] = useState<"grid | list" | string>("grid");
   const [pagiCurrent, setPagiCurrent] = useState(1);
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [listUsers, setListUsers] = useState<UserItem[] | null>(null);
   const [detailUser, setDetailUser] = useState<UserItem | null>(null);
   const [mode, setMode] = useState<"add" | "edit" | "detail" | null>(null);
-  
 
   // Form
   const { register, control, watch } = useForm<Actions>({
@@ -74,19 +76,24 @@ const UsersManagement = () => {
 
   useEffect(() => {
     const list = dataUserList?.data ?? [];
-    const result = watchSelect === "ALL" ? list : list.filter(f => f.role.toUpperCase() === watchSelect.toUpperCase())
+    const result =
+      watchSelect === "ALL"
+        ? list
+        : list.filter(
+            (f) => f.role.toUpperCase() === watchSelect.toUpperCase()
+          );
     setListUsers(result);
-  }, [dataUserList, pagiCurrent , watchSelect]);
+  }, [dataUserList, pagiCurrent, watchSelect]);
 
   const handleUserDetail = (user: UserItem) => {
     setDetailUser(user);
-    setShowDetailModal(true);
+    setIsModal();
     setMode("detail");
   };
 
   const handleUserAdd = () => {
     setMode("add");
-    setShowDetailModal(true);
+    setIsModal();
   };
 
   // Style css && text && icon
@@ -486,8 +493,8 @@ const UsersManagement = () => {
         </div>
       )}
       <Dialog
-        open={showDetailModal}
-        onOpenChange={(open) => setShowDetailModal(open)}
+        open={isModal}
+        onOpenChange={(open) => setIsModal(open)}
       >
         {mode === "detail" && <UserDetailPopup detailUser={detailUser} />}
         {mode === "add" && <UserPopup />}
