@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import PaginationLayout from "@/layouts/Pagination";
 import type { Location } from "@/interfaces/location.interface";
 import type { RoomItems } from "@/interfaces/room.interface";
+import { Button } from "@/components/ui/button";
 
 export default function RoomListing() {
   const [province, setProvince] = useState<string>("");
@@ -33,8 +34,6 @@ export default function RoomListing() {
   //set pagination
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 9;
-
-  const target = document.getElementById("toSection");
 
   const { data: listRooms } = useQuery({
     queryKey: ["getListRoom", pageIndex, pageSize],
@@ -74,6 +73,12 @@ export default function RoomListing() {
       behavior: "smooth",
     });
   }, [pageIndex]);
+
+  // get detail rooms by id
+  const handleGetRoomsById = (value: number) => {
+    console.log(value);
+    
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
@@ -292,9 +297,12 @@ export default function RoomListing() {
                 </p>
 
                 {/* CTA Button */}
-                <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+                <Button
+                  onClick={() => handleGetRoomsById(room.id)}
+                  className="cursor-pointer w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                >
                   Xem chi tiết
-                </button>
+                </Button>
               </div>
             </div>
           ))}
