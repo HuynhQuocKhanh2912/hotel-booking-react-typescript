@@ -40,9 +40,12 @@ const schema = z.object({
   //   .refine((val) => val !== undefined, {
   //     message: "Vui lòng chọn giới tính",
   //   }),
-  gender: z.boolean().optional().refine((val) => val !== undefined, {
-    message: "Vui lòng chọn giới tính",
-}),
+  gender: z
+    .boolean()
+    .optional()
+    .refine((val) => val !== undefined, {
+      message: "Vui lòng chọn giới tính",
+    }),
   role: z.string().nonempty("Vui lòng chọn vai trò"),
 });
 
@@ -73,11 +76,12 @@ export default function UserPopup() {
     resolver: zodResolver(schema),
   });
   const onSubmit = (data: UserAdd) => {
-    console.log("🎄 ~ onSubmit ~ data:", data);
     mutateUserAdd({
       ...data,
       gender: data.gender as boolean,
     });
+    
+
   };
 
   return (
