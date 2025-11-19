@@ -75,7 +75,10 @@ export default function RoomListing() {
   }, [pageIndex]);
 
   // get detail rooms by id
-  const handleGetRoomsById = (value: number) => {};
+  const handleGetRoomsById = (value: number) => {
+    console.log(value);
+    
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
