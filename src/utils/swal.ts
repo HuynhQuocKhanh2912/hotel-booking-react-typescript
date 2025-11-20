@@ -16,3 +16,24 @@ export const showSwal = (optional?: optionalProp) => {
         confirmButtonText: "Xác nhận",
     });
 }
+
+
+export const showComfirmSwal = (optional: optionalProp) => {
+    return Swal.fire({
+        title: "Bạn có chắc chắn không",
+        text: optional.text || "",
+        icon: optional.icon || "warning",        showCancelButton: true,
+        confirmButtonText: "Có",
+        cancelButtonText: "Không",
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#dc3545",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Swal.fire({
+            //     title: "Deleted!",
+            //     text: "Your file has been deleted.",
+            //     icon: "success"
+            // });
+        }
+    });
+}
