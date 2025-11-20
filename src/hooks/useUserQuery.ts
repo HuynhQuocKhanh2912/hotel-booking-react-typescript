@@ -3,7 +3,7 @@ import type { UserItemAdd } from "@/interfaces/user.interface";
 import { deleteUsersApi, getUsersListAllApi, getUsersListApi, postUsersApi } from "@/services/users.api";
 import { useUserAdminStore } from "@/stores/userManagement.store";
 import { showSwal } from "@/utils/swal";
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
 
@@ -29,17 +29,19 @@ export const useUsersListQuery = (
 export const useUsersAddQuery = (
   optional?: Partial<Omit<UseMutationOptions<UserItemAdd, AxiosError, UserItemAdd, unknown>, "mutationFn">>
 ) => {
+  const queryClient = useQueryClient();
   const { setIsModal } = useUserAdminStore();
 
   return useMutation({
     mutationFn: postUsersApi,
     onSuccess: () => {
       setIsModal()
+      queryClient.invalidateQueries({ queryKey: ["users-list"] });
       showSwal({
         title: 'Thêm thành công'
       })
     },
-    onError: (error:any) => {
+    onError: (error: any) => {
       setIsModal()
       showSwal({
         title: 'Thêm thất bại',
@@ -54,13 +56,20 @@ export const useUsersAddQuery = (
 export const useUsersDeleteQuery = (
   optional?: Partial<Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">>
 ) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteUsersApi,
     onSuccess: () => {
-      console.log('onSuccess DELETE')
+      queryClient.invalidateQueries({ queryKey: ["users-list"] });
+      
     },
-    onError: () => {
-
+    onError: (error: any) => {
+      showSwal({
+        title: 'Thêm thất bại',
+        text: error?.response?.data?.content,
+        icon: "error"
+      })
     },
     ...optional
   });
