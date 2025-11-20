@@ -26,11 +26,14 @@ import PaginationLayout from "@/layouts/Pagination";
 import type { Location } from "@/interfaces/location.interface";
 import type { RoomItems } from "@/interfaces/room.interface";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function RoomListing() {
   const [province, setProvince] = useState<string>("");
   const [filteredLocation, setFilterdLocation] = useState<Location[]>([]);
   const [selectID, getSelectID] = useState<string>("");
+  const navigate = useNavigate();
+
   //set pagination
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 9;
@@ -67,17 +70,16 @@ export default function RoomListing() {
     ? (listRoomsLocation ?? [])
     : (listRooms?.data ?? []);
 
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }, [pageIndex]);
+  // useEffect(() => {
+  //   window.scrollTo({
+  //     top: 0,
+  //     behavior: "smooth",
+  //   });
+  // }, [pageIndex]);
 
   // get detail rooms by id
   const handleGetRoomsById = (value: number) => {
-    console.log(value);
-    
+    navigate(`/detail-room/${value}`);
   };
 
   return (
