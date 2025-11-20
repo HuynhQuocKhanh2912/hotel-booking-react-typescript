@@ -17,10 +17,7 @@ type PaginationAdmin = {
   handlePagi: (data: number) => void;
 };
 
-export function PaginationAdmin({
-  infoPagi,
-  handlePagi,
-}: PaginationAdmin) {
+export function PaginationAdmin({ infoPagi, handlePagi }: PaginationAdmin) {
   const { pageIndex, pageSize, totalRow } = infoPagi;
   const totalPagi = Math.ceil(totalRow / pageSize);
   const nextPagi = pageIndex + 1;
@@ -47,7 +44,9 @@ export function PaginationAdmin({
         )}
         {pageIndex > 2 && (
           <PaginationItem>
-            <PaginationLink href="#" onClick={() => handlePagi(prevPagi)}>{prevPagi}</PaginationLink>
+            <PaginationLink href="#" onClick={() => handlePagi(prevPagi)}>
+              {prevPagi}
+            </PaginationLink>
           </PaginationItem>
         )}
 
@@ -62,17 +61,19 @@ export function PaginationAdmin({
 
         {pageIndex < totalPagi && (
           <PaginationItem>
-            <PaginationLink href="#" onClick={() => handlePagi(nextPagi)}>{nextPagi}</PaginationLink>
+            <PaginationLink href="#" onClick={() => handlePagi(nextPagi)}>
+              {nextPagi}
+            </PaginationLink>
           </PaginationItem>
         )}
 
-        {totalPagi >= 4 && pageIndex < (totalPagi - 2) && (
+        {totalPagi >= 4 && pageIndex < totalPagi - 2 && (
           <PaginationItem className="mr-1">
             <Ellipsis className="size-4" />
           </PaginationItem>
         )}
 
-        {pageIndex < (totalPagi - 1)  && (
+        {pageIndex < totalPagi - 1 && (
           <PaginationItem>
             <PaginationLink href="#" onClick={() => handlePagi(totalPagi)}>
               {totalPagi}
@@ -80,7 +81,7 @@ export function PaginationAdmin({
           </PaginationItem>
         )}
 
-        {pageIndex < (totalPagi) && (
+        {pageIndex < totalPagi && (
           <PaginationItem>
             <PaginationNext
               href="#"
