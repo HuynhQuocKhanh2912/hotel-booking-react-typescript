@@ -21,7 +21,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getLocation } from "@/services/location.api";
 import { Card, CardContent } from "@/components/ui/card";
 import { getListRoomByLocation, getRoomListApi } from "@/services/room.api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PaginationLayout from "@/layouts/Pagination";
 import type { Location } from "@/interfaces/location.interface";
 import type { RoomItems } from "@/interfaces/room.interface";
