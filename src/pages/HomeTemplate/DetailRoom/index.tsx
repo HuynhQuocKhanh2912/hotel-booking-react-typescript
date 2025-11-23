@@ -18,17 +18,18 @@ export default function RoomDetail() {
     queryFn: () => getRoomByID(Number(id)),
     enabled: !!id,
   });
+  console.log(roomDetail);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Gallery />
+      <Gallery gallerry={roomDetail} />
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <Title roomData={roomDetail} />
             <Highlights />
-            <Desc />
-            <Amenities />
+            <Desc desc={roomDetail} />
+            <Amenities amenity={roomDetail} />
             <Rules />
           </div>
           <BookingForm />
