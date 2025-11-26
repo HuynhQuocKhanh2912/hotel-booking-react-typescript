@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Heart, Share2, ChevronLeft, Sparkles } from "lucide-react";
-import type { RoomItems } from "@/interfaces/room.interface";
+import { useRoomDetail } from "@/stores/useRoomDetails.store";
 
-interface galleryProps {
-  gallerry?: RoomItems;
-}
-
-export default function Gallery({ gallerry }: galleryProps) {
+export default function Gallery() {
+  const gallerry = useRoomDetail((state) => state.roomID);
   const [isFavorite, setIsFavorite] = useState(false);
   return (
     <div className="relative">

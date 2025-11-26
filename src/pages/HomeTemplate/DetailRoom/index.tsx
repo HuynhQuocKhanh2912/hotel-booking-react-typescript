@@ -8,27 +8,35 @@ import BookingForm from "./BookingForm";
 import { useParams } from "react-router-dom";
 import { getRoomByID } from "@/services/room.api";
 import { useQuery } from "@tanstack/react-query";
+import { useRoomDetail } from "@/stores/useRoomDetails.store";
+import { useEffect } from "react";
 // import Comments from "./Comments";
 
 export default function RoomDetail() {
   const { id } = useParams();
+  const setRoomDetail = useRoomDetail((state) => state.setRoomDetail);
   // get rooms by id
   const { data: roomDetail } = useQuery({
     queryKey: ["roomDetail", id],
     queryFn: () => getRoomByID(Number(id)),
     enabled: !!id,
   });
-  console.log(roomDetail);
+
+  useEffect(() => {
+    if (roomDetail) {
+      setRoomDetail(roomDetail);
+    }
+  }, [roomDetail]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Gallery gallerry={roomDetail} />
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <Gallery />
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <Title roomData={roomDetail} />
+            <Title />
             <Highlights />
-            <Desc desc={roomDetail} />
+            <Desc />
             <Amenities amenity={roomDetail} />
             <Rules />
           </div>
