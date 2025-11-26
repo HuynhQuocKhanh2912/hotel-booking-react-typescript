@@ -1,12 +1,21 @@
 import type { PagiUser, UserItem } from "@/interfaces/user.interface";
 import type { UserItemAdd } from "@/interfaces/user.interface";
-import { deleteUsersApi, getUsersListAllApi, getUsersListApi, postUsersApi } from "@/services/users.api";
+import {
+  deleteUsersApi,
+  getUsersListAllApi,
+  getUsersListApi,
+  postUsersApi,
+} from "@/services/users.api";
 import { useUserAdminStore } from "@/stores/userManagement.store";
 import { showSwal } from "@/utils/swal";
-import { useMutation, useQuery, type UseMutationOptions, type UseQueryOptions, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  type UseMutationOptions,
+  type UseQueryOptions,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-
-
 
 export const useUsersListAllQuery = () =>
   useQuery({
@@ -18,7 +27,17 @@ export const useUsersListQuery = (
   pageIndex: number,
   pageSize: number,
   keyword?: string,
-  optional?: Partial<Omit<UseQueryOptions<PagiUser<UserItem[]>, Error, PagiUser<UserItem[]>, [string, number, string | undefined]>, "queryKey" | "queryFn">>
+  optional?: Partial<
+    Omit<
+      UseQueryOptions<
+        PagiUser<UserItem[]>,
+        Error,
+        PagiUser<UserItem[]>,
+        [string, number, string | undefined]
+      >,
+      "queryKey" | "queryFn"
+    >
+  >
 ) =>
   useQuery({
     queryKey: ["users-list", pageIndex, keyword],
@@ -27,7 +46,12 @@ export const useUsersListQuery = (
   });
 
 export const useUsersAddQuery = (
-  optional?: Partial<Omit<UseMutationOptions<UserItemAdd, AxiosError, UserItemAdd, unknown>, "mutationFn">>
+  optional?: Partial<
+    Omit<
+      UseMutationOptions<UserItemAdd, AxiosError, UserItemAdd, unknown>,
+      "mutationFn"
+    >
+  >
 ) => {
   const queryClient = useQueryClient();
   const { setIsModal } = useUserAdminStore();
@@ -35,26 +59,28 @@ export const useUsersAddQuery = (
   return useMutation({
     mutationFn: postUsersApi,
     onSuccess: () => {
-      setIsModal()
+      setIsModal();
       queryClient.invalidateQueries({ queryKey: ["users-list"] });
       showSwal({
-        title: 'Thêm thành công'
-      })
+        title: "Thêm thành công",
+      });
     },
     onError: (error: any) => {
-      setIsModal()
+      setIsModal();
       showSwal({
-        title: 'Thêm thất bại',
+        title: "Thêm thất bại",
         text: error?.response?.data?.content,
-        icon: "error"
-      })
+        icon: "error",
+      });
     },
-    ...optional
+    ...optional,
   });
-}
+};
 
 export const useUsersDeleteQuery = (
-  optional?: Partial<Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">>
+  optional?: Partial<
+    Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">
+  >
 ) => {
   const queryClient = useQueryClient();
 
@@ -62,15 +88,14 @@ export const useUsersDeleteQuery = (
     mutationFn: deleteUsersApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-list"] });
-      
     },
     onError: (error: any) => {
       showSwal({
-        title: 'Thêm thất bại',
+        title: "Thêm thất bại",
         text: error?.response?.data?.content,
-        icon: "error"
-      })
+        icon: "error",
+      });
     },
-    ...optional
+    ...optional,
   });
-}
+};

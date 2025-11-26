@@ -1,12 +1,8 @@
+import { useRoomDetail } from "@/stores/useRoomDetails.store";
 import { Users, Bed, Bath, Star, MapPin } from "lucide-react";
-import type { RoomItems } from "@/interfaces/room.interface";
 
-interface RoomProps {
-  roomData?: RoomItems;
-}
-
-export default function Title({ roomData }: RoomProps) {
-  const room = roomData;
+export default function Title() {
+  const room = useRoomDetail((state) => state.roomID);
 
   return (
     <div className="bg-white rounded-3xl p-8 shadow-xl">
@@ -31,7 +27,7 @@ export default function Title({ roomData }: RoomProps) {
 
       {/* Room Stats */}
       <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-100">
-        <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-blue-100 px-5 py-3 rounded-2xl">
+        <div className="flex items-center gap-3 bg-linear-to-r from-blue-50 to-blue-100 px-5 py-3 rounded-2xl">
           <Users className="w-6 h-6 text-blue-600" />
           <div>
             <div className="text-sm text-blue-900 font-semibold">
@@ -39,7 +35,7 @@ export default function Title({ roomData }: RoomProps) {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 bg-gradient-to-r from-purple-50 to-purple-100 px-5 py-3 rounded-2xl">
+        <div className="flex items-center gap-3 bg-linear-to-r from-purple-50 to-purple-100 px-5 py-3 rounded-2xl">
           <Bed className="w-6 h-6 text-purple-600" />
           <div>
             <div className="text-sm text-purple-900 font-semibold">
@@ -47,7 +43,7 @@ export default function Title({ roomData }: RoomProps) {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 bg-gradient-to-r from-pink-50 to-pink-100 px-5 py-3 rounded-2xl">
+        <div className="flex items-center gap-3 bg-linear-to-r from-pink-50 to-pink-100 px-5 py-3 rounded-2xl">
           <Bed className="w-6 h-6 text-pink-600" />
           <div>
             <div className="text-sm text-pink-900 font-semibold">
@@ -55,7 +51,7 @@ export default function Title({ roomData }: RoomProps) {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-green-100 px-5 py-3 rounded-2xl">
+        <div className="flex items-center gap-3 bg-linear-to-r from-green-50 to-green-100 px-5 py-3 rounded-2xl">
           <Bath className="w-6 h-6 text-green-600" />
           <div>
             <div className="text-sm text-green-900 font-semibold">
