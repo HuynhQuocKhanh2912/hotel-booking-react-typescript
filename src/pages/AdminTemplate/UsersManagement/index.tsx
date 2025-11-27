@@ -39,6 +39,7 @@ import UserDetailPopup from "./UserDetailPopup";
 import UserPopup from "./UserPopup";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useUserAdminStore } from "@/stores/userManagement.store";
+import { showComfirmSwal } from "@/utils/swal";
 
 //Type Filters and Actions
 type Actions = {
@@ -103,7 +104,10 @@ const UsersManagement = () => {
   };
 
   const handleUserDelete = (id: number) => {
-    mutateUserDelete(id);
+    showComfirmSwal({
+      title: "Bạn có chắc chắn xoá không",
+      onConfirm: () => mutateUserDelete(id),
+    });
   };
 
   // Style css && text && icon
@@ -477,7 +481,10 @@ const UsersManagement = () => {
                           <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                          <button
+                            onClick={() => handleUserDelete(user.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>

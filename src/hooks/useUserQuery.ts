@@ -91,7 +91,7 @@ export const useUsersDeleteQuery = (
     },
     onError: (error: any) => {
       showSwal({
-        title: "Thêm thất bại",
+        title: 'Xoá thất bại',
         text: error?.response?.data?.content,
         icon: "error",
       });
