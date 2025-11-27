@@ -62,11 +62,10 @@ export const useUsersDeleteQuery = (
     mutationFn: deleteUsersApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-list"] });
-      
     },
     onError: (error: any) => {
       showSwal({
-        title: 'Thêm thất bại',
+        title: 'Xoá thất bại',
         text: error?.response?.data?.content,
         icon: "error"
       })
