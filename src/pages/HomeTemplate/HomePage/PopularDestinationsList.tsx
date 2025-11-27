@@ -25,7 +25,7 @@ export default function PopularDestinationsList() {
           </div>
           <Button
             onClick={() => navigate("/location")}
-            className="cursor-pointer !p-0 hidden md:flex items-center text-blue-600 font-semibold hover:text-blue-700 bg-transparent hover:bg-transparent"
+            className="cursor-pointer p-0! hidden md:flex items-center text-blue-600 font-semibold hover:text-blue-700 bg-transparent hover:bg-transparent"
           >
             Xem tất cả <ChevronRight className="w-5 h-5 ml-1" />
           </Button>
@@ -37,14 +37,14 @@ export default function PopularDestinationsList() {
               key={index}
               className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
             >
-              <div className="aspect-[4/3] overflow-hidden">
+              <div className="aspect-4/3 overflow-hidden">
                 <img
                   src={dest.hinhAnh.trim().replace(/\s+/g, " ")}
                   alt={dest.tinhThanh}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                 <div className="flex items-center space-x-2 mb-2">
                   <Map />

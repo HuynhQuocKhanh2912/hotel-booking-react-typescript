@@ -83,7 +83,7 @@ export default function RoomListing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900 mb-2">
@@ -171,7 +171,7 @@ export default function RoomListing() {
               className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
             >
               {/* Image Container */}
-              <div className="relative h-72 overflow-hidden bg-gradient-to-br from-gray-200 to-gray-300">
+              <div className="relative h-72 overflow-hidden bg-linear-to-br from-gray-200 to-gray-300">
                 <img
                   src={room.hinhAnh}
                   alt={room.tenPhong}
@@ -190,7 +190,7 @@ export default function RoomListing() {
                 </div>
 
                 {/* Price Badge */}
-                <div className="absolute bottom-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg px-4 py-2 shadow-lg">
+                <div className="absolute bottom-4 right-4 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg px-4 py-2 shadow-lg">
                   <p className="text-2xl font-bold">${room.giaTien}</p>
                   <p className="text-xs text-blue-100">/đêm</p>
                 </div>
@@ -301,7 +301,7 @@ export default function RoomListing() {
                 {/* CTA Button */}
                 <Button
                   onClick={() => handleGetRoomsById(room.id)}
-                  className="cursor-pointer w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                  className="cursor-pointer w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   Xem chi tiết
                 </Button>

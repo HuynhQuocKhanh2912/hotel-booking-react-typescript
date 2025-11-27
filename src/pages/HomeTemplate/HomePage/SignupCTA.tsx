@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 
 export default function SignupCTA() {
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+    <section className="py-20 bg-linear-to-br from-blue-600 to-blue-800 text-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           Đăng Ký Ngay Để Nhận Ưu Đãi Độc Quyền
