@@ -11,14 +11,10 @@ import {
   X,
   Check,
 } from "lucide-react";
-import type { RoomItems } from "@/interfaces/room.interface";
+import { useRoomDetail } from "@/stores/useRoomDetails.store";
 
-interface AmenitiesProps {
-  amenity?: RoomItems;
-}
-
-export default function Amenities({ amenity }: AmenitiesProps) {
-  const room = amenity;
+export default function Amenities() {
+  const room = useRoomDetail((state) => state.roomID);
 
   const amenities = [
     {
@@ -96,7 +92,7 @@ export default function Amenities({ amenity }: AmenitiesProps) {
               key={idx}
               className="flex items-center gap-4 p-4 rounded-2xl border-2 border-green-200 bg-green-50 hover:border-green-300 transition-all hover:shadow-md"
             >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-green-100 flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-green-100 shrink-0">
                 <amenity.icon className="w-6 h-6 text-green-600" />
               </div>
               <div className="flex-1 min-w-0">
@@ -107,7 +103,7 @@ export default function Amenities({ amenity }: AmenitiesProps) {
                   {amenity.description}
                 </div>
               </div>
-              <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+              <Check className="w-6 h-6 text-green-600 shrink-0" />
             </div>
           ))}
         </div>
@@ -126,7 +122,7 @@ export default function Amenities({ amenity }: AmenitiesProps) {
                 key={idx}
                 className="flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-200 bg-gray-50 opacity-60 transition-all"
               >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-200 flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-200 shrink-0">
                   <amenity.icon className="w-6 h-6 text-gray-400" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -137,7 +133,7 @@ export default function Amenities({ amenity }: AmenitiesProps) {
                     {amenity.description}
                   </div>
                 </div>
-                <X className="w-6 h-6 text-gray-400 flex-shrink-0" />
+                <X className="w-6 h-6 text-gray-400 shrink-0" />
               </div>
             ))}
           </div>

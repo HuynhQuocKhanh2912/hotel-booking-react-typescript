@@ -23,9 +23,7 @@ export default function RoomDetail() {
   });
 
   useEffect(() => {
-    if (roomDetail) {
-      setRoomDetail(roomDetail);
-    }
+    if (roomDetail) setRoomDetail(roomDetail);
   }, [roomDetail]);
 
   return (
@@ -37,7 +35,7 @@ export default function RoomDetail() {
             <Title />
             <Highlights />
             <Desc />
-            <Amenities amenity={roomDetail} />
+            <Amenities />
             <Rules />
           </div>
           <BookingForm />

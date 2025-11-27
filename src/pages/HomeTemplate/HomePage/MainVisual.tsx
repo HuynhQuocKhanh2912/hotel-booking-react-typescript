@@ -25,13 +25,13 @@ export default function MainVisual() {
   const [date2, setDate2] = React.useState<Date | undefined>(undefined);
 
   return (
-    <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white">
+    <section className="relative bg-linear-to-br from-slate-900 via-blue-900 to-slate-800 text-white">
       <div className="absolute inset-0 bg-black opacity-10"></div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             Trải Nghiệm Kỳ Nghỉ <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-cyan-300">
               Đẳng Cấp Thế Giới
             </span>
           </h1>
@@ -133,7 +133,7 @@ export default function MainVisual() {
                 <div className="relative">
                   <Users className="absolute left-3 top-3.5 text-slate-400 w-4 h-4" />
                   <Select>
-                    <SelectTrigger className="w-full !h-full text-black pt-3 pb-3 pl-12">
+                    <SelectTrigger className="w-full h-full! text-black pt-3 pb-3 pl-12">
                       <SelectValue placeholder="Select a fruit" />
                     </SelectTrigger>
                     <SelectContent>
@@ -147,7 +147,7 @@ export default function MainVisual() {
                   </Select>
                 </div>
                 <Select>
-                  <SelectTrigger className="w-full !h-full text-black">
+                  <SelectTrigger className="w-full h-full! text-black">
                     <SelectValue placeholder="Select a fruit" />
                   </SelectTrigger>
                   <SelectContent>
@@ -162,7 +162,7 @@ export default function MainVisual() {
               </div>
             </div>
           </div>
-          <Button className="cursor-pointer w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition shadow-lg flex items-center justify-center space-x-2">
+          <Button className="cursor-pointer w-full mt-6 bg-linear-to-r from-blue-600 to-blue-700 text-white py-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition shadow-lg flex items-center justify-center space-x-2">
             <Search className="w-5 h-5" />
             <span>Tìm kiếm khách sạn</span>
           </Button>

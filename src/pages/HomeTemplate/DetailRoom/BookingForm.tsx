@@ -77,7 +77,7 @@ export default function BookingForm() {
           {/* Price */}
           <div className="mb-6 pb-6 border-b border-gray-100">
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+              <span className="text-5xl font-bold bg-linear-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
                 ${room.giaTien}
               </span>
               <span className="text-gray-600 text-lg">/đêm</span>
@@ -100,7 +100,7 @@ export default function BookingForm() {
                     <Button
                       variant="outline"
                       id="date"
-                      className="w-full justify-between font-normal border-none shadow-none !pl-2"
+                      className="w-full justify-between font-normal border-none shadow-none pl-2!"
                     >
                       {date1 ? date1.toLocaleDateString() : "dd/mm/yyyy"}
                       <CalendarDays />
@@ -131,7 +131,7 @@ export default function BookingForm() {
                     <Button
                       variant="outline"
                       id="date"
-                      className="w-full justify-between font-normal border-none shadow-none !pl-2"
+                      className="w-full justify-between font-normal border-none shadow-none pl-2!"
                     >
                       {date2 ? date2.toLocaleDateString() : "dd/mm/yyyy"}
                       <CalendarDays />
@@ -179,10 +179,10 @@ export default function BookingForm() {
           {/* Book Button */}
           <button
             onClick={() => handleBook()}
-            className="w-full bg-gradient-to-r from-blue-400 to-cyan-300 text-white py-4 rounded-2xl font-bold text-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 mb-4 relative overflow-hidden group"
+            className="w-full bg-linear-to-r from-blue-400 to-cyan-300 text-white py-4 rounded-2xl font-bold text-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 mb-4 relative overflow-hidden group"
           >
             <span className="relative z-10">Đặt phòng ngay</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
 
           <p className="text-center text-sm text-gray-600 mb-6">
@@ -207,11 +207,11 @@ export default function BookingForm() {
 
           {/* Contact Buttons */}
           <div className="grid grid-cols-2 gap-3 mt-6">
-            <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+            <button className="flex items-center justify-center gap-2 bg-linear-to-r from-blue-50 to-blue-100 text-blue-700 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
               <MessageCircle className="w-5 h-5" />
               Chat
             </button>
-            <button className="flex items-center justify-center gap-2 bg-gradient-to-r from-green-50 to-green-100 text-green-700 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
+            <button className="flex items-center justify-center gap-2 bg-linear-to-r from-green-50 to-green-100 text-green-700 py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
               <Phone className="w-5 h-5" />
               Gọi
             </button>
@@ -219,7 +219,7 @@ export default function BookingForm() {
         </div>
 
         {/* Trust Badge */}
-        <div className="mt-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 text-center">
+        <div className="mt-6 bg-linear-to-r from-purple-50 to-pink-50 rounded-2xl p-6 text-center">
           <Shield className="w-12 h-12 text-purple-600 mx-auto mb-3" />
           <h3 className="font-bold text-gray-900 mb-2">Đặt phòng an toàn</h3>
           <p className="text-sm text-gray-600">
