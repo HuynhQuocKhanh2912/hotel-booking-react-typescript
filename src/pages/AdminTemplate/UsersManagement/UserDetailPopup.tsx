@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { formatDateSafe } from "@/hooks/useFormatDateSafe";
 import type { UserItem } from "@/interfaces/user.interface";
+import { showComfirmSwal } from "@/utils/swal";
 import {
   Calendar,
   Crown,
@@ -20,9 +18,13 @@ import {
 
 type detailUser = {
   detailUser: UserItem | null;
+  onDelete: (id:number) => void;
 };
 
-export default function UserDetailPopup({ detailUser }: detailUser) {
+export default function UserDetailPopup({
+  detailUser,
+  onDelete,
+}: detailUser) {
   const getRoleBadge = (role: string | undefined) => {
     return role === "ADMIN"
       ? {
@@ -165,8 +167,19 @@ export default function UserDetailPopup({ detailUser }: detailUser) {
           </div>
 
           <div className="flex gap-3">
-            <Button type="submit" className="flex-1 h-11.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Chỉnh sửa</Button>
-            <Button type="submit" className="h-11.5 px-4 py-2.5 bg-white border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors">Xóa</Button>
+            <Button
+              type="submit"
+              className="flex-1 h-11.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Chỉnh sửa
+            </Button>
+            <Button
+              type="submit"
+              onClick={() => detailUser?.id && onDelete(detailUser?.id)}
+              className="h-11.5 px-4 py-2.5 bg-white border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+            >
+              Xóa
+            </Button>
           </div>
         </div>
       </div>

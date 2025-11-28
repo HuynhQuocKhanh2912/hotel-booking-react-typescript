@@ -481,7 +481,7 @@ const UsersManagement = () => {
                           <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button
+                          <button 
                             onClick={() => handleUserDelete(user.id)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                           >
@@ -513,7 +513,7 @@ const UsersManagement = () => {
         </div>
       )}
       <Dialog open={isModal} onOpenChange={() => setIsModal()}>
-        {mode === "detail" && <UserDetailPopup detailUser={detailUser} />}
+        {mode === "detail" && <UserDetailPopup detailUser={detailUser} onDelete={handleUserDelete} />}
         {mode === "add" && <UserPopup />}
       </Dialog>
     </>
