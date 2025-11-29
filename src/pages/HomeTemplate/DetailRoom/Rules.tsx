@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, Clock, CalendarDays } from "lucide-react";
 export default function Rules() {
   const rules = [
@@ -22,7 +21,7 @@ export default function Rules() {
             key={idx}
             className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center shrink-0">
               <rule.icon className="w-5 h-5 text-white" />
             </div>
             <div>

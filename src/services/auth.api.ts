@@ -1,6 +1,6 @@
 import type { BaseApiResponse } from "@/interfaces/base.interface";
-import api from "./api";
 import type { CurrentUser } from "@/interfaces/auth.interface";
+import api from "./api";
 type LoginDataRequest = {
   email: string;
   password: string;
