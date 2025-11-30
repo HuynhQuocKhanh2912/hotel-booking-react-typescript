@@ -1,3 +1,7 @@
+export interface BaseUserApi<T> {
+  user: T;
+  token: string;
+}
 export interface CurrentUser {
   id: number;
   name: string;

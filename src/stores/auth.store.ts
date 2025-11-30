@@ -1,18 +1,20 @@
-import type { CurrentUser } from "@/interfaces/auth.interface";
+import type { BaseUserApi, CurrentUser } from "@/interfaces/auth.interface";
 import { create } from "zustand";
 
 //  save user in local
 const userLocal = localStorage.getItem("user");
-const parseUser: CurrentUser | null = userLocal ? JSON.parse(userLocal) : null;
+const parseUser: BaseUserApi<CurrentUser> | null = userLocal
+  ? JSON.parse(userLocal)
+  : null;
 
 type authStore = {
-  user: CurrentUser | null;
-  setUser: (user: CurrentUser) => void;
+  user: BaseUserApi<CurrentUser> | null;
+  setUser: (user: BaseUserApi<CurrentUser>) => void;
   clearUser: () => void;
 };
 export const useAuthStore = create<authStore>((set) => ({
   user: parseUser, //default value
-  setUser: (user: CurrentUser) => {
+  setUser: (user: BaseUserApi<CurrentUser>) => {
     localStorage.setItem("user", JSON.stringify(user));
     set({ user });
   },
