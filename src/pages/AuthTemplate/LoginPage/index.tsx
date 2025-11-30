@@ -18,7 +18,8 @@ const schema = z.object({
 type LoginFormInput = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const { user, setUser, clearUser } = useAuthStore();
+  const { setUser } = useAuthStore();
+
   const navigate = useNavigate();
   const {
     register,
@@ -34,8 +35,8 @@ export default function LoginPage() {
     mutationFn: (data: LoginFormInput) => loginApi(data),
     onSuccess: (currentUser) => {
       setUser(currentUser);
-      console.log(currentUser);
-      navigate("/");
+      const isUser = currentUser.user.role === "USER";
+      navigate(isUser ? "/" : "/dashboard");
     },
     onError: (error: any) => {
       console.log(error);
@@ -96,7 +97,7 @@ export default function LoginPage() {
             {/* Button */}
             <Button className="w-full bg-linear-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 rounded-xl shadow-lg hover:shadow-xl transition-transform hover:scale-[1.02] flex items-center justify-center gap-2">
               <LogIn className="w-4 h-4" />
-              Đăng nhập
+              {isPending ? "Đang Đăng Nhập..." : "Đăng nhập"}
             </Button>
           </form>
 
