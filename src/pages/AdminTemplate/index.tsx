@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router-dom";
 import {
@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function Dashboard() {
   // Lib
@@ -85,8 +86,13 @@ export default function Dashboard() {
     },
   ];
 
+  const { user } = useAuthStore();
+  if (user && user.user.role === "USER") {
+    return <Navigate to="/" />;
+  }
+
   return (
-    <div className="flex h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden max-md:pb-12">
+    <div className="flex h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden max-md:pb-12">
       {/* Sidebar */}
       <aside
         className={`${

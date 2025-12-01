@@ -14,6 +14,7 @@ const schema = z.object({
   email: z.string().nonempty("Không bỏ trống"),
   password: z.string().nonempty("Không bỏ trống"),
 });
+console.log(schema);
 
 type LoginFormInput = z.infer<typeof schema>;
 

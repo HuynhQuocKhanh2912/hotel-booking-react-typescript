@@ -14,7 +14,7 @@ type authStore = {
 };
 export const useAuthStore = create<authStore>((set) => ({
   user: parseUser, //default value
-  setUser: (user: BaseUserApi<CurrentUser>) => {
+  setUser: (user: BaseUserApi<CurrentUser> | null) => {
     localStorage.setItem("user", JSON.stringify(user));
     set({ user });
   },
