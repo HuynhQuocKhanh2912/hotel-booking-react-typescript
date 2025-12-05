@@ -104,10 +104,17 @@ const UsersManagement = () => {
   };
 
   const handleUserDelete = (id: number) => {
-    showComfirmSwal({
-      title: "Bạn có chắc chắn xoá không",
-      onConfirm: () => mutateUserDelete(id),
-    });
+    // Close Dialog before show SweetAlert2
+    if (isModal) {
+      setIsModal();
+      setMode(null);
+    }
+    setTimeout(() => {
+      showComfirmSwal({
+        title: "Bạn có chắc chắn xoá không",
+        onConfirm: () => mutateUserDelete(id),
+      });
+    }, 100);
   };
 
   // Style css && text && icon
@@ -146,11 +153,12 @@ const UsersManagement = () => {
   };
 
   const stats = {
-    total: dataUserListAll?.length,
-    admin: dataUserListAll?.filter((u) => u.role === "ADMIN").length,
-    user: dataUserListAll?.filter((u) => u.role === "USER").length,
-    male: dataUserListAll?.filter((u) => u.gender === true).length,
-    female: dataUserListAll?.filter((u) => u.gender === false).length,
+    total: dataUserListAll?.length || 0,
+    admin: dataUserListAll?.filter((user) => user.role === "ADMIN").length || 0,
+    user: dataUserListAll?.filter((user) => user.role === "USER").length || 0,
+    male: dataUserListAll?.filter((user) => user.gender === true).length || 0,
+    female:
+      dataUserListAll?.filter((user) => user.gender === false).length || 0,
   };
 
   // Pagination
@@ -481,7 +489,7 @@ const UsersManagement = () => {
                           <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
                             <Edit className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleUserDelete(user.id)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                           >
@@ -512,8 +520,15 @@ const UsersManagement = () => {
           <PaginationAdmin infoPagi={infoPagi} handlePagi={handlePagi} />
         </div>
       )}
+      
+      {/* Dialog */}
       <Dialog open={isModal} onOpenChange={() => setIsModal()}>
-        {mode === "detail" && <UserDetailPopup detailUser={detailUser} onDelete={handleUserDelete} />}
+        {mode === "detail" && (
+          <UserDetailPopup
+            detailUser={detailUser}
+            onDelete={handleUserDelete}
+          />
+        )}
         {mode === "add" && <UserPopup />}
       </Dialog>
     </>
