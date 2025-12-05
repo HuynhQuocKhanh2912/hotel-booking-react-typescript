@@ -61,6 +61,7 @@ export const useUsersAddQuery = (
     onSuccess: () => {
       setIsModal();
       queryClient.invalidateQueries({ queryKey: ["users-list"] });
+      queryClient.invalidateQueries({ queryKey: ["users-list-all"] });
       showSwal({
         title: "Thêm thành công",
       });
@@ -88,6 +89,7 @@ export const useUsersDeleteQuery = (
     mutationFn: deleteUsersApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users-list"] });
+      queryClient.invalidateQueries({ queryKey: ["users-list-all"] });
     },
     onError: (error: any) => {
       showSwal({

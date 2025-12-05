@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { formatDateSafe } from "@/hooks/useFormatDateSafe";
 import type { UserItem } from "@/interfaces/user.interface";
-import { showComfirmSwal } from "@/utils/swal";
 import {
   Calendar,
   Crown,
