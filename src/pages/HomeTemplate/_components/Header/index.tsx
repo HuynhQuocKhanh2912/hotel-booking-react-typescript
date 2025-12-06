@@ -11,6 +11,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   const { user, clearUser } = useAuthStore();
+
   const handleOpen = () => {
     setOpen((prev) => !prev);
   };
@@ -56,14 +57,8 @@ export default function Header() {
           {/* user dropdown */}
           {user ? (
             <div className="user-dropdown relative" onClick={handleOpen}>
-              <Avatar className="cursor-pointer w-5 h-5">
-                <AvatarImage
-                  src={
-                    user.user.avatar ??
-                    "https://static.vecteezy.com/system/resources/previews/002/002/403/non_2x/man-with-beard-avatar-character-isolated-icon-free-vector.jpg"
-                  }
-                  alt={user.user.name}
-                />
+              <Avatar className="cursor-pointer w-[50px] h-[50px]">
+                <AvatarImage src={user?.user?.avatar ?? undefined} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               {open === false ? (
@@ -72,9 +67,9 @@ export default function Header() {
                 <>
                   <div
                     id="userDropdown"
-                    className="z-10 absolute bg-white border border-default-medium rounded-base shadow-lg w-44"
+                    className="z-10 absolute bg-white border border-default-medium rounded-base shadow-lg"
                   >
-                    <div className="px-4 py-3 border-b border-default-medium text-sm text-heading">
+                    <div className="px-4 py-3 border-default-medium text-sm text-heading">
                       <div className="font-medium">{user.user.name}</div>
                       <div className="truncate">{user.user.email}</div>
                     </div>
@@ -82,25 +77,12 @@ export default function Header() {
                       className="p-2 text-sm text-body font-medium"
                       aria-labelledby="avatarButton"
                     >
-                      <li>
-                        <a
-                          href="#"
-                          className="block w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded-md"
-                        >
-                          Dashboard
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="block w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded-md"
-                        >
-                          Settings
-                        </a>
-                      </li>
+                      <Button className="w-full cursor-pointer bg-transparent hover:bg-transparent text-black flex justify-start border-t rounded-none hover:text-[#1546E0]">
+                        Dashboard
+                      </Button>
                       <Button
                         onClick={handelClearUser}
-                        className="w-full bg-transparent p-0 text-black flex justify-start border-t rounded-none"
+                        className="w-full cursor-pointer bg-transparent hover:bg-transparent text-black flex justify-start border-t rounded-none hover:text-[#1546E0]"
                       >
                         Sign out
                       </Button>

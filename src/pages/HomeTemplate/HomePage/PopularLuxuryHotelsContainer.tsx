@@ -10,6 +10,9 @@ export default function RoomList() {
     queryFn: () => getRoomListApi(1, 6),
   });
   const navigate = useNavigate();
+  const handleGetRoom = (id: number) => {
+    navigate(`/detail-room/${id}`);
+  };
 
   return (
     <div className=" bg-white">
@@ -117,9 +120,12 @@ export default function RoomList() {
                 </p>
 
                 {/* CTA Button */}
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors">
+                <Button
+                  onClick={() => handleGetRoom(room.id)}
+                  className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold py-5 px-4 rounded-lg transition-colors"
+                >
                   Xem chi tiết
-                </button>
+                </Button>
               </div>
             </div>
           ))}
