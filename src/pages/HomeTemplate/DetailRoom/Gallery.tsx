@@ -34,9 +34,9 @@ export default function Gallery() {
           alt={gallerry?.tenPhong}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent"></div>
         {/* Hot Badge */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 px-6 py-2 rounded-full shadow-xl animate-pulse">
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-linear-to-r from-orange-500 to-red-500 px-6 py-2 rounded-full shadow-xl animate-pulse">
           <span className="text-white font-bold flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
             Đặt nhiều nhất tuần này

@@ -15,7 +15,7 @@ const AboutPage = lazy(() => import("@/pages/HomeTemplate/About"));
 const ContactPage = lazy(() => import("@/pages/HomeTemplate/Contact"));
 const DetailRoom = lazy(() => import("@/pages/HomeTemplate/DetailRoom"));
 const LocationPage = lazy(() => import("@/pages/HomeTemplate/Location"));
-const RoomsLocation = lazy(() => import("@/pages/HomeTemplate/RoomsLocation"));
+// const RoomsLocation = lazy(() => import("@/pages/HomeTemplate/RoomsLocation"));
 // const SalePage = lazy(() => import("@/pages/HomeTemplate/Sale"));
 const UsersManagement = lazy(
   () => import("@/pages/AdminTemplate/UsersManagement")
@@ -72,7 +72,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: "/rooms-location/",
-        element: withSuspense(RoomsLocation),
+        // element: withSuspense(RoomsLocation),
       },
       // {
       //   path: "/sale",
