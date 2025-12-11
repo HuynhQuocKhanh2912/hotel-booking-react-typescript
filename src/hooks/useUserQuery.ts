@@ -1,10 +1,11 @@
-import type { PagiUser, UserItem } from "@/interfaces/user.interface";
+import type { PagiUser, UserItem, UserItemEdit } from "@/interfaces/user.interface";
 import type { UserItemAdd } from "@/interfaces/user.interface";
 import {
   deleteUsersApi,
   getUsersListAllApi,
   getUsersListApi,
   postUsersApi,
+  putUsersApi,
 } from "@/services/users.api";
 import { useUserAdminStore } from "@/stores/userManagement.store";
 import { showSwal } from "@/utils/swal";
@@ -66,11 +67,13 @@ export const useUsersAddQuery = (
         title: "Thêm thành công",
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
       setIsModal();
       showSwal({
         title: "Thêm thất bại",
-        text: error?.response?.data?.content,
+        text: content,
         icon: "error",
       });
     },
@@ -91,10 +94,47 @@ export const useUsersDeleteQuery = (
       queryClient.invalidateQueries({ queryKey: ["users-list"] });
       queryClient.invalidateQueries({ queryKey: ["users-list-all"] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
       showSwal({
         title: 'Xoá thất bại',
-        text: error?.response?.data?.content,
+        text: content,
+        icon: "error",
+      });
+    },
+    ...optional,
+  });
+};
+
+export const useUsersEditQuery = (
+  optional?: Partial<
+    Omit<
+      UseMutationOptions<UserItemEdit, AxiosError, UserItemEdit, unknown>,
+      "mutationFn"
+    >
+  >
+) => {
+  const queryClient = useQueryClient();
+  const { setIsModal } = useUserAdminStore();
+
+  return useMutation({
+    mutationFn: (payload: UserItemEdit) => putUsersApi(payload.id, payload),
+    onSuccess: () => {
+      setIsModal();
+      queryClient.invalidateQueries({ queryKey: ["users-list"] });
+      queryClient.invalidateQueries({ queryKey: ["users-list-all"] });
+      showSwal({
+        title: "Sửa thành công",
+      });
+    },
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
+      setIsModal();
+      showSwal({
+        title: "Sửa thất bại",
+        text: content,
         icon: "error",
       });
     },

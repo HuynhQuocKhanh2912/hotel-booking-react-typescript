@@ -103,6 +103,12 @@ const UsersManagement = () => {
     setIsModal();
   };
 
+  const handleUserEdit = (user: UserItem) => {
+    setMode("edit");
+    setIsModal();
+    setDetailUser(user);
+  };
+
   const handleUserDelete = (id: number) => {
     // Close Dialog before show SweetAlert2
     if (isModal) {
@@ -380,7 +386,10 @@ const UsersManagement = () => {
                       Chi tiết
                     </button>
                     <div className="flex gap-2">
-                      <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleUserEdit(user)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
@@ -520,7 +529,7 @@ const UsersManagement = () => {
           <PaginationAdmin infoPagi={infoPagi} handlePagi={handlePagi} />
         </div>
       )}
-      
+
       {/* Dialog */}
       <Dialog open={isModal} onOpenChange={() => setIsModal()}>
         {mode === "detail" && (
@@ -529,7 +538,8 @@ const UsersManagement = () => {
             onDelete={handleUserDelete}
           />
         )}
-        {mode === "add" && <UserPopup />}
+        {mode === "add" && <UserPopup mode="add" />}
+        {mode === "edit" && <UserPopup mode="edit" detailUser={detailUser} />}
       </Dialog>
     </>
   );
