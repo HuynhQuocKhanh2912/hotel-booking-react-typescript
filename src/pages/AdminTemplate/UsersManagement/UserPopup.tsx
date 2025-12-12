@@ -27,6 +27,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChevronDownIcon, TriangleAlert } from "lucide-react";
 import { useUsersAddQuery, useUsersEditQuery } from "@/hooks/useUserQuery";
+import type { UserItem } from "@/interfaces/user.interface";
+
+interface UserPopupProps {
+  mode: "add" | "edit";
+  detailUser?: UserForms | UserItem | null;
+}
+
 
 const baseSchema = z.object({
   id: z.number(),
@@ -53,10 +60,6 @@ const addSchema = editSchema.extend({
 
 type UserForms = z.infer<typeof editSchema>;
 
-interface UserPopupProps {
-  mode: "add" | "edit";
-  detailUser?: UserForms | null;
-}
 
 export default function UserPopup({ detailUser, mode }: UserPopupProps) {
   const [openBirthday, setOpenBirthday] = useState(false);
@@ -125,7 +128,7 @@ export default function UserPopup({ detailUser, mode }: UserPopupProps) {
       setValue("id", detailUser?.id);
       setValue("name", detailUser?.name);
       setValue("email", detailUser?.email);
-      setValue("phone", detailUser?.phone);
+      setValue("phone", detailUser?.phone ?? "");
       setValue("birthday", detailUser?.birthday);
       setValue("gender", detailUser?.gender);
       setValue("role", detailUser?.role);
