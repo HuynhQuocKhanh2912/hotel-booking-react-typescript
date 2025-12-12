@@ -15,6 +15,7 @@ import {
   Filter,
   Mars,
   Venus,
+  ImagePlus,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -40,6 +41,7 @@ import UserPopup from "./UserPopup";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useUserAdminStore } from "@/stores/userManagement.store";
 import { showComfirmSwal } from "@/utils/swal";
+import UserPopupImage from "./UserPopupImage";
 
 //Type Filters and Actions
 type Actions = {
@@ -57,7 +59,9 @@ const UsersManagement = () => {
   const [pagiCurrent, setPagiCurrent] = useState(1);
   const [listUsers, setListUsers] = useState<UserItem[] | null>(null);
   const [detailUser, setDetailUser] = useState<UserItem | null>(null);
-  const [mode, setMode] = useState<"add" | "edit" | "detail" | null>(null);
+  const [mode, setMode] = useState<"add" | "edit" | "detail" | "img" | null>(
+    null
+  );
 
   // Form
   const { register, control, watch } = useForm<Actions>({
@@ -107,6 +111,11 @@ const UsersManagement = () => {
     setMode("edit");
     setIsModal();
     setDetailUser(user);
+  };
+
+  const handleUserImg = () => {
+    setMode("img");
+    setIsModal();
   };
 
   const handleUserDelete = (id: number) => {
@@ -322,7 +331,13 @@ const UsersManagement = () => {
                 className="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-lg transition-all overflow-hidden"
               >
                 <div className="relative h-32 bg-gradient-to-r from-purple-500 to-indigo-600">
-                  <div className="absolute -bottom-12 left-6 w-24 h-24 rounded-full overflow-hidden">
+                  <div
+                    className="absolute -bottom-12 left-6 w-24 h-24 rounded-full overflow-hidden cursor-pointer"
+                    onClick={() => handleUserImg()}
+                  >
+                    <div className="absolute inset-0 flex items-center justify-center text-white rounded-full bg-black/60 transition-all duration-300 z-2 opacity-0 hover:opacity-100">
+                      <ImagePlus />
+                    </div>
                     {user.avatar ? (
                       <img
                         src={user.avatar}
@@ -538,6 +553,7 @@ const UsersManagement = () => {
             onDelete={handleUserDelete}
           />
         )}
+        {mode === "img" && <UserPopupImage />}
         {mode === "add" && <UserPopup mode="add" />}
         {mode === "edit" && <UserPopup mode="edit" detailUser={detailUser} />}
       </Dialog>

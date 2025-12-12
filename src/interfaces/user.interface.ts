@@ -11,7 +11,7 @@ export interface UserItem {
   name: string;
   email: string;
   password: string;
-  phone: null;
+  phone: null | string;
   birthday: string;
   avatar: null;
   gender: boolean;
