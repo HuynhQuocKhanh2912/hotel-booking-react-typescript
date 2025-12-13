@@ -1,5 +1,6 @@
 export interface BaseApiResponse<T> {
   statusCode: number;
-  content: T;
+  message: string;
   dateTime: Date;
+  content: T;
 }
