@@ -1,4 +1,8 @@
-import type { PagiUser, UserItem, UserItemEdit } from "@/interfaces/user.interface";
+import type {
+  PagiUser,
+  UserItem,
+  UserItemEdit,
+} from "@/interfaces/user.interface";
 import type { UserItemAdd } from "@/interfaces/user.interface";
 import {
   deleteUsersApi,
@@ -98,7 +102,7 @@ export const useUsersDeleteQuery = (
       const content = (error.response?.data as { content?: string } | undefined)
         ?.content;
       showSwal({
-        title: 'Xoá thất bại',
+        title: "Xoá thất bại",
         text: content,
         icon: "error",
       });
