@@ -3,7 +3,6 @@ import { Star, Shield, MessageCircle, Phone, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-
 import {
   Popover,
   PopoverContent,
@@ -23,8 +22,19 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { bookingRoom } from "@/services/bookingRoom.api";
 import { format } from "date-fns";
-import type { RoomPayload } from "@/interfaces/RoomPayload.interface";
 import Swal from "sweetalert2";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  maPhong: z.number().min(1, "Mã phòng không được để trống"),
+  ngayDen: z.date().max(new Date(), { error: "Không bỏ trống" }),
+  ngayDi: z.date().max(new Date(), { error: "Không bỏ trống" }),
+  soLuongKhach: z.number().min(1, "Số lượng khách phải lớn hơn 0"),
+  maNguoiDung: z.number().min(1, "Mã người dùng không được để trống"),
+});
+
+type BookingFormData = z.infer<typeof schema>;
 
 export default function BookingForm() {
   const [open1, setOpen1] = React.useState(false);
@@ -37,12 +47,13 @@ export default function BookingForm() {
     setValue,
     control,
     formState: { errors },
-  } = useForm<RoomPayload>({
+  } = useForm<BookingFormData>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      id: 0,
+      // id: 0,
       maPhong: 0,
-      ngayDen: "",
-      ngayDi: "",
+      ngayDen: undefined as unknown as Date,
+      ngayDi: undefined as unknown as Date,
       soLuongKhach: 0,
       maNguoiDung: 0,
     },
@@ -58,24 +69,25 @@ export default function BookingForm() {
   }, [room?.id, user?.user.id, setValue]);
 
   const { mutate: handleBooking } = useMutation({
-    mutationFn: bookingRoom,
+    mutationFn: (data: BookingFormData) => bookingRoom(data),
     onSuccess: () => {
       Swal.fire({
         title: "Drag me!",
-        icon: "Đặt phòng thành công",
+        icon: "success",
         draggable: true,
       });
     },
     onError: () => {},
   });
 
-  const onsubmit = (data: RoomPayload) => {
+  const onsubmit = (data: BookingFormData) => {
     const payload = {
       ...data,
-      ngayDen: format(data.ngayDen!, "yyyy-MM-dd"),
-      ngayDi: format(data.ngayDi!, "yyyy-MM-dd"),
+      ngayDen: format(data.ngayDen, "yyyy-MM-dd"),
+      ngayDi: format(data.ngayDi, "yyyy-MM-dd"),
     };
-    handleBooking(payload);
+    // handleBooking(payload);
+    console.log(payload);
   };
 
   return (
@@ -194,23 +206,30 @@ export default function BookingForm() {
                   name="soLuongKhach"
                   control={control}
                   render={({ field }) => (
-                    <Select
-                      onValueChange={(value) => field.onChange(Number(value))}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="1">1</SelectItem>
-                          <SelectItem value="2">2</SelectItem>
-                          <SelectItem value="3">3</SelectItem>
-                          <SelectItem value="4">4</SelectItem>
-                          <SelectItem value="5">5</SelectItem>
-                          <SelectItem value="6">6</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                            <SelectItem value="4">4</SelectItem>
+                            <SelectItem value="5">5</SelectItem>
+                            <SelectItem value="6">6</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {errors.soLuongKhach && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.soLuongKhach.message}
+                        </p>
+                      )}
+                    </>
                   )}
                 />
               </div>
