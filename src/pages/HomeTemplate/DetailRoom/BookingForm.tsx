@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Star, Shield, MessageCircle, Phone, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,22 +19,26 @@ import {
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
 import { Controller, useForm } from "react-hook-form";
 import { useAuthStore } from "@/stores/auth.store";
+import { useMutation } from "@tanstack/react-query";
+import { bookingRoom } from "@/services/bookingRoom.api";
 import { format } from "date-fns";
-import { formatDateSafe } from "@/hooks/useFormatDateSafe";
-interface FormBoook {
-  id: number;
-  maPhong: number | undefined;
-  ngayDen: string | undefined;
-  ngayDi: string | undefined;
-  soLuongKhach: number;
-  maNguoiDung: number;
-}
+import Swal from "sweetalert2";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  maPhong: z.number().min(1, "Mã phòng không được để trống"),
+  ngayDen: z.date().max(new Date(), { error: "Không bỏ trống" }),
+  ngayDi: z.date().max(new Date(), { error: "Không bỏ trống" }),
+  soLuongKhach: z.number().min(1, "Số lượng khách phải lớn hơn 0"),
+  maNguoiDung: z.number().min(1, "Mã người dùng không được để trống"),
+});
+
+type BookingFormData = z.infer<typeof schema>;
 
 export default function BookingForm() {
   const [open1, setOpen1] = React.useState(false);
-  const [date1, setDate1] = React.useState<Date | undefined>(undefined);
   const [open2, setOpen2] = React.useState(false);
-  const [date2, setDate2] = React.useState<Date | undefined>(undefined);
   const { user } = useAuthStore();
   const { roomID } = useRoomDetail();
   const room = roomID;
@@ -43,20 +47,47 @@ export default function BookingForm() {
     setValue,
     control,
     formState: { errors },
-  } = useForm<FormBoook>({
+  } = useForm<BookingFormData>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      id: 0,
-      maPhong: room?.id,
-      ngayDen: "",
-      ngayDi: "",
+      // id: 0,
+      maPhong: 0,
+      ngayDen: undefined as unknown as Date,
+      ngayDi: undefined as unknown as Date,
       soLuongKhach: 0,
-      maNguoiDung: user?.user.id,
+      maNguoiDung: 0,
     },
   });
-  setValue("maPhong", room?.id);
 
-  const onsubmit = (data: FormBoook) => {
-    console.log("Lấy thông tin đặt phòng: ", data);
+  useEffect(() => {
+    if (room?.id) {
+      setValue("maPhong", room?.id);
+    }
+    if (user?.user.id) {
+      setValue("maNguoiDung", user.user.id);
+    }
+  }, [room?.id, user?.user.id, setValue]);
+
+  const { mutate: handleBooking } = useMutation({
+    mutationFn: (data: BookingFormData) => bookingRoom(data),
+    onSuccess: () => {
+      Swal.fire({
+        title: "Drag me!",
+        icon: "success",
+        draggable: true,
+      });
+    },
+    onError: () => {},
+  });
+
+  const onsubmit = (data: BookingFormData) => {
+    const payload = {
+      ...data,
+      ngayDen: format(data.ngayDen, "yyyy-MM-dd"),
+      ngayDi: format(data.ngayDi, "yyyy-MM-dd"),
+    };
+    // handleBooking(payload);
+    console.log(payload);
   };
 
   return (
@@ -96,7 +127,7 @@ export default function BookingForm() {
                             className="w-full justify-between font-normal border-none shadow-none pl-2!"
                           >
                             {field.value
-                              ? formatDateSafe(field.value)
+                              ? format(field.value, "dd/MM/yyyy")
                               : "dd/MM/yyyy"}
                             <CalendarDays />
                           </Button>
@@ -112,10 +143,9 @@ export default function BookingForm() {
                             }
                             captionLayout="dropdown"
                             onSelect={(date) => {
-                              setDate1(date);
                               setOpen1(false);
                               if (date) {
-                                field.onChange(format(date, "dd/MM/yyyy"));
+                                field.onChange(date);
                               }
                             }}
                           />
@@ -140,7 +170,7 @@ export default function BookingForm() {
                             className="w-full justify-between font-normal border-none shadow-none pl-2!"
                           >
                             {field.value
-                              ? formatDateSafe(field.value)
+                              ? format(field.value, "dd/MM/yyyy")
                               : "dd/MM/yyyy"}
                             <CalendarDays />
                           </Button>
@@ -156,10 +186,9 @@ export default function BookingForm() {
                             }
                             captionLayout="dropdown"
                             onSelect={(date) => {
-                              setDate2(date);
                               setOpen2(false);
                               if (date) {
-                                field.onChange(format(date, "dd/MM/yyyy"));
+                                field.onChange(date);
                               }
                             }}
                           />
@@ -177,21 +206,30 @@ export default function BookingForm() {
                   name="soLuongKhach"
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="1">1</SelectItem>
-                          <SelectItem value="2">2</SelectItem>
-                          <SelectItem value="3">3</SelectItem>
-                          <SelectItem value="4">4</SelectItem>
-                          <SelectItem value="5">5</SelectItem>
-                          <SelectItem value="6">6</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                    <>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="2">2</SelectItem>
+                            <SelectItem value="3">3</SelectItem>
+                            <SelectItem value="4">4</SelectItem>
+                            <SelectItem value="5">5</SelectItem>
+                            <SelectItem value="6">6</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {errors.soLuongKhach && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.soLuongKhach.message}
+                        </p>
+                      )}
+                    </>
                   )}
                 />
               </div>
