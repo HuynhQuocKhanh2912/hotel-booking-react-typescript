@@ -26,13 +26,18 @@ import Swal from "sweetalert2";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const schema = z.object({
-  maPhong: z.number().min(1, "Mã phòng không được để trống"),
-  ngayDen: z.date().max(new Date(), { error: "Không bỏ trống" }),
-  ngayDi: z.date().max(new Date(), { error: "Không bỏ trống" }),
-  soLuongKhach: z.number().min(1, "Số lượng khách phải lớn hơn 0"),
-  maNguoiDung: z.number().min(1, "Mã người dùng không được để trống"),
-});
+const schema = z
+  .object({
+    maPhong: z.number().min(1, "Mã phòng không được để trống"),
+    ngayDen: z.date().max(new Date(), { error: "Không bỏ trống" }),
+    ngayDi: z.date().max(new Date(), { error: "Không bỏ trống" }),
+    soLuongKhach: z.number().min(1, "Số lượng khách phải lớn hơn 0"),
+    maNguoiDung: z.number().min(1, "Mã người dùng không được để trống"),
+  })
+  .refine((data) => data.ngayDi > data.ngayDen, {
+    path: ["ngayDi"],
+    message: "Ngày trả phòng phải nhỏ hơn ngày nhận phòng",
+  });
 
 type BookingFormData = z.infer<typeof schema>;
 
@@ -116,85 +121,99 @@ export default function BookingForm() {
                   name="ngayDen"
                   control={control}
                   render={({ field }) => (
-                    <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">
-                        Nhận phòng
-                      </label>
-                      <Popover open={open1} onOpenChange={setOpen1}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between font-normal border-none shadow-none pl-2!"
+                    <>
+                      <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
+                        <label className="text-xs font-semibold text-gray-600 block mb-1">
+                          Nhận phòng
+                        </label>
+                        <Popover open={open1} onOpenChange={setOpen1}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-between font-normal border-none shadow-none pl-2!"
+                            >
+                              {field.value
+                                ? format(field.value, "dd/MM/yyyy")
+                                : "dd/MM/yyyy"}
+                              <CalendarDays />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
                           >
-                            {field.value
-                              ? format(field.value, "dd/MM/yyyy")
-                              : "dd/MM/yyyy"}
-                            <CalendarDays />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto overflow-hidden p-0"
-                          align="start"
-                        >
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            captionLayout="dropdown"
-                            onSelect={(date) => {
-                              setOpen1(false);
-                              if (date) {
-                                field.onChange(date);
+                            <Calendar
+                              mode="single"
+                              selected={
+                                field.value ? new Date(field.value) : undefined
                               }
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                              captionLayout="dropdown"
+                              onSelect={(date) => {
+                                setOpen1(false);
+                                if (date) {
+                                  field.onChange(date);
+                                }
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      {errors.ngayDen && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.ngayDen.message}
+                        </p>
+                      )}
+                    </>
                   )}
                 />
                 <Controller
                   name="ngayDi"
                   control={control}
                   render={({ field }) => (
-                    <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
-                      <label className="text-xs font-semibold text-gray-600 block mb-1">
-                        Trả phòng
-                      </label>
-                      <Popover open={open2} onOpenChange={setOpen2}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            id="date"
-                            className="w-full justify-between font-normal border-none shadow-none pl-2!"
+                    <>
+                      <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
+                        <label className="text-xs font-semibold text-gray-600 block mb-1">
+                          Trả phòng
+                        </label>
+                        <Popover open={open2} onOpenChange={setOpen2}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              id="date"
+                              className="w-full justify-between font-normal border-none shadow-none pl-2!"
+                            >
+                              {field.value
+                                ? format(field.value, "dd/MM/yyyy")
+                                : "dd/MM/yyyy"}
+                              <CalendarDays />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
                           >
-                            {field.value
-                              ? format(field.value, "dd/MM/yyyy")
-                              : "dd/MM/yyyy"}
-                            <CalendarDays />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto overflow-hidden p-0"
-                          align="start"
-                        >
-                          <Calendar
-                            mode="single"
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            captionLayout="dropdown"
-                            onSelect={(date) => {
-                              setOpen2(false);
-                              if (date) {
-                                field.onChange(date);
+                            <Calendar
+                              mode="single"
+                              selected={
+                                field.value ? new Date(field.value) : undefined
                               }
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                              captionLayout="dropdown"
+                              onSelect={(date) => {
+                                setOpen2(false);
+                                if (date) {
+                                  field.onChange(date);
+                                }
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      {errors.ngayDi && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.ngayDi.message}
+                        </p>
+                      )}
+                    </>
                   )}
                 />
               </div>
@@ -208,6 +227,7 @@ export default function BookingForm() {
                   render={({ field }) => (
                     <>
                       <Select
+                        value={field.value ? String(field.value) : ""}
                         onValueChange={(value) => field.onChange(Number(value))}
                       >
                         <SelectTrigger className="w-full">
