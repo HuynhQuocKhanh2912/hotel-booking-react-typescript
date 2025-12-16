@@ -1,6 +1,7 @@
 import type { BaseApiResponse } from "@/interfaces/base.interface";
 import type {
   PagiUser,
+  UserAvatar,
   UserItem,
   UserItemAdd,
   UserItemEdit,
@@ -65,6 +66,19 @@ export const deleteUsersApi = async (id: number) => {
     await api.delete(`users?id=${id}`);
   } catch (error) {
     console.log("🎄 ~ deleteUsersApi ~ error:", error);
+    throw error;
+  }
+};
+
+export const postUsersAvatarApi = async (data: FormData) => {
+  try {
+    const response = await api.post<BaseApiResponse<UserAvatar>>(
+      `users/upload-avatar`,
+      data
+    );
+    return response.data.content;
+  } catch (error) {
+    console.log("🎄 ~ postUsersAvatarApi ~ error:", error);
     throw error;
   }
 };
