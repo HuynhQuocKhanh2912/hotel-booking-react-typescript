@@ -38,3 +38,7 @@ export interface UserItemEdit {
   gender: boolean;
   role: string;
 }
+
+export interface UserAvatar {
+  avatar: File | null;
+}

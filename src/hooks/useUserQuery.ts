@@ -1,5 +1,6 @@
 import type {
   PagiUser,
+  UserAvatar,
   UserItem,
   UserItemEdit,
 } from "@/interfaces/user.interface";
@@ -9,6 +10,7 @@ import {
   getUsersListAllApi,
   getUsersListApi,
   postUsersApi,
+  postUsersAvatarApi,
   putUsersApi,
 } from "@/services/users.api";
 import { useUserAdminStore } from "@/stores/userManagement.store";
@@ -138,6 +140,40 @@ export const useUsersEditQuery = (
       setIsModal();
       showSwal({
         title: "Sửa thất bại",
+        text: content,
+        icon: "error",
+      });
+    },
+    ...optional,
+  });
+};
+
+export const useUsersAvatarQuery = (
+  optional?: Partial<
+    Omit<
+      UseMutationOptions<UserAvatar, AxiosError, UserAvatar, unknown>,
+      "mutationFn"
+    >
+  >
+) => {
+  const queryClient = useQueryClient();
+  const { setIsModal } = useUserAdminStore();
+
+  return useMutation({
+    mutationFn: postUsersAvatarApi,
+    onSuccess: () => {
+      setIsModal();
+      queryClient.invalidateQueries({ queryKey: ["users-list"] });
+      queryClient.invalidateQueries({ queryKey: ["users-list-all"] });
+      showSwal({
+        title: "Thêm thành công",
+      });
+    },
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)?.content;
+      setIsModal();
+      showSwal({
+        title: "Thêm thất bại",
         text: content,
         icon: "error",
       });
