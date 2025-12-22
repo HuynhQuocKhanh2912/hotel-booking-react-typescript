@@ -170,7 +170,8 @@ export const useUsersAvatarQuery = (
       });
     },
     onError: (error: AxiosError) => {
-      const content = (error.response?.data as { content?: string } | undefined)?.content;
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
       setIsModal();
       showSwal({
         title: "Thêm thất bại",

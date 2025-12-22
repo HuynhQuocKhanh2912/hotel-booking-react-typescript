@@ -25,19 +25,39 @@ import { format } from "date-fns";
 import Swal from "sweetalert2";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 
 const schema = z
   .object({
     maPhong: z.number().min(1, "Mã phòng không được để trống"),
-    ngayDen: z.date().max(new Date(), { error: "Không bỏ trống" }),
-    ngayDi: z.date().max(new Date(), { error: "Không bỏ trống" }),
+
+    ngayDen: z
+      .date()
+      .nullable()
+      .refine((v) => v !== null, { message: "Không bỏ trống" })
+      .refine((v) => !v || v >= today, {
+        message: "Ngày đến không được nhỏ hơn hôm nay",
+      }),
+
+    ngayDi: z
+      .date()
+      .nullable()
+      .refine((v) => v !== null, { message: "Không bỏ trống" })
+      .refine((v) => !v || v >= today, {
+        message: "Ngày đi không được nhỏ hơn hôm nay",
+      }),
+
     soLuongKhach: z.number().min(1, "Số lượng khách phải lớn hơn 0"),
-    maNguoiDung: z.number().min(1, "Mã người dùng không được để trống"),
+    maNguoiDung: z.number().min(1),
   })
-  .refine((data) => data.ngayDi > data.ngayDen, {
-    path: ["ngayDi"],
-    message: "Ngày trả phòng phải nhỏ hơn ngày nhận phòng",
-  });
+  .refine(
+    (data) => !data.ngayDen || !data.ngayDi || data.ngayDi > data.ngayDen,
+    {
+      path: ["ngayDi"],
+      message: "Ngày trả phòng phải sau ngày nhận phòng",
+    }
+  );
 
 type BookingFormData = z.infer<typeof schema>;
 
@@ -57,8 +77,8 @@ export default function BookingForm() {
     defaultValues: {
       // id: 0,
       maPhong: 0,
-      ngayDen: undefined as unknown as Date,
-      ngayDi: undefined as unknown as Date,
+      ngayDen: null,
+      ngayDi: null,
       soLuongKhach: 0,
       maNguoiDung: 0,
     },
@@ -86,6 +106,8 @@ export default function BookingForm() {
   });
 
   const onsubmit = (data: BookingFormData) => {
+    if (!data.ngayDen || !data.ngayDi) return;
+
     const payload = {
       ...data,
       ngayDen: format(data.ngayDen, "yyyy-MM-dd"),
@@ -130,7 +152,7 @@ export default function BookingForm() {
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
-                              className="w-full justify-between font-normal border-none shadow-none pl-2!"
+                              className="w-full justify-between font-normal border-none shadow-none pl-2"
                             >
                               {field.value
                                 ? format(field.value, "dd/MM/yyyy")
@@ -144,15 +166,11 @@ export default function BookingForm() {
                           >
                             <Calendar
                               mode="single"
-                              selected={
-                                field.value ? new Date(field.value) : undefined
-                              }
+                              selected={field.value ?? undefined}
                               captionLayout="dropdown"
                               onSelect={(date) => {
                                 setOpen1(false);
-                                if (date) {
-                                  field.onChange(date);
-                                }
+                                field.onChange(date ?? null);
                               }}
                             />
                           </PopoverContent>
@@ -185,6 +203,7 @@ export default function BookingForm() {
                               {field.value
                                 ? format(field.value, "dd/MM/yyyy")
                                 : "dd/MM/yyyy"}
+
                               <CalendarDays />
                             </Button>
                           </PopoverTrigger>
@@ -194,15 +213,11 @@ export default function BookingForm() {
                           >
                             <Calendar
                               mode="single"
-                              selected={
-                                field.value ? new Date(field.value) : undefined
-                              }
+                              selected={field.value ?? undefined}
                               captionLayout="dropdown"
                               onSelect={(date) => {
                                 setOpen2(false);
-                                if (date) {
-                                  field.onChange(date);
-                                }
+                                field.onChange(date ?? null);
                               }}
                             />
                           </PopoverContent>
@@ -235,12 +250,12 @@ export default function BookingForm() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="1">1</SelectItem>
-                            <SelectItem value="2">2</SelectItem>
-                            <SelectItem value="3">3</SelectItem>
-                            <SelectItem value="4">4</SelectItem>
-                            <SelectItem value="5">5</SelectItem>
-                            <SelectItem value="6">6</SelectItem>
+                            <SelectItem value="1">1 Khách</SelectItem>
+                            <SelectItem value="2">2 Khách</SelectItem>
+                            <SelectItem value="3">3 Khách</SelectItem>
+                            <SelectItem value="4">4 Khách</SelectItem>
+                            <SelectItem value="5">5 Khách</SelectItem>
+                            <SelectItem value="6">6 Khách</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
