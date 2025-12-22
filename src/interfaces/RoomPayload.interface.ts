@@ -1,7 +1,7 @@
 export interface RoomPayload {
   maPhong: number;
-  ngayDen: Date;
-  ngayDi: Date;
+  ngayDen: Date | null;
+  ngayDi: Date | null;
   soLuongKhach: number;
   maNguoiDung: number;
 }
