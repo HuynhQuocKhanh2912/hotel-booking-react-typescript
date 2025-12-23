@@ -10,7 +10,7 @@ import { getRoomByID } from "@/services/room.api";
 import { useQuery } from "@tanstack/react-query";
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
 import { useEffect } from "react";
-// import Comments from "./Comments";
+import CommentList from "./Comments";
 
 export default function RoomDetail() {
   const { id } = useParams();
@@ -29,7 +29,7 @@ export default function RoomDetail() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50">
       <Gallery />
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-[1440px] mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <Title />
@@ -40,7 +40,9 @@ export default function RoomDetail() {
           </div>
           <BookingForm />
         </div>
-        <div className="mt-8">{/* <Comments /> */}</div>
+        <div className="mt-8">
+          <CommentList />
+        </div>
       </div>
     </div>
   );

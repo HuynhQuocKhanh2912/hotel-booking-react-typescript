@@ -106,15 +106,15 @@ export default function BookingForm() {
   });
 
   const onsubmit = (data: BookingFormData) => {
-    if (!data.ngayDen || !data.ngayDi) return;
+    // if (!data.ngayDen || !data.ngayDi) return;
 
-    const payload = {
-      ...data,
-      ngayDen: format(data.ngayDen, "yyyy-MM-dd"),
-      ngayDi: format(data.ngayDi, "yyyy-MM-dd"),
-    };
-    // handleBooking(payload);
-    console.log(payload);
+    // const payload = {
+    //   ...data,
+    //   ngayDen: format(data.ngayDen, "yyyy-MM-dd"),
+    //   ngayDi: format(data.ngayDi, "yyyy-MM-dd"),
+    // };
+    handleBooking(data);
+    // console.log(payload);
   };
 
   return (
