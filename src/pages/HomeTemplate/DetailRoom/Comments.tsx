@@ -1,247 +1,246 @@
-// import React, { useState, useEffect } from "react";
-// import { Star, Send, Smile } from "lucide-react";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { Textarea } from "@/components/ui/textarea";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { Label } from "@/components/ui/label";
-// import { format, parse } from "date-fns";
-// import { vi } from "date-fns/locale";
+import { useState, useEffect, FC } from "react";
+import { Star, ThumbsUp, MoreVertical } from "lucide-react";
 
-// // 🧩 Hàm parse ngày linh hoạt
-// const parseDate = (dateString: string): Date | null => {
-//   if (!dateString) return null;
+interface Comment {
+  id: number;
+  maPhong: number;
+  maNguoiBinhLuan: number;
+  ngayBinhLuan: Date;
+  noiDung: string;
+  saoBinhLuan: number;
+}
 
-//   // 1️⃣ ISO format (ví dụ: 2024-10-08T15:49:50.196Z)
-//   if (!isNaN(Date.parse(dateString))) {
-//     return new Date(dateString);
-//   }
+type SortBy = "newest" | "highest" | "lowest";
 
-//   // 2️⃣ Dạng dd/MM/yyyy HH:mm:ss
-//   const parsed = parse(dateString, "dd/MM/yyyy HH:mm:ss", new Date());
-//   if (!isNaN(parsed.getTime())) {
-//     return parsed;
-//   }
+const MovieReviewSection: FC = () => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<SortBy>("newest");
 
-//   // 3️⃣ Dạng chuỗi tự nhiên (vd: Tue Dec 17 2024 16:55:09 GMT+0700)
-//   const native = new Date(dateString);
-//   if (!isNaN(native.getTime())) {
-//     return native;
-//   }
+  const mockData: Comment[] = [
+    {
+      id: 20434,
+      maPhong: 1,
+      maNguoiBinhLuan: 54994,
+      ngayBinhLuan: "2025-10-21T07:37:40.511Z",
+      noiDung: "Phòng ổn, nhưng test này bỏ qua phần sao.",
+      saoBinhLuan: 0,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=54994",
+      userName: "Nguyễn Văn A",
+    },
+    {
+      id: 20435,
+      maPhong: 1,
+      maNguoiBinhLuan: 54995,
+      ngayBinhLuan: "2025-10-21T07:50:05.360Z",
+      noiDung: "Phòng ổn, nhưng test này bỏ qua phần sao.",
+      saoBinhLuan: 0,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=54995",
+      userName: "Trần Thị B",
+    },
+    {
+      id: 20436,
+      maPhong: 1,
+      maNguoiBinhLuan: 54996,
+      ngayBinhLuan: "2025-10-21T07:50:06.262Z",
+      noiDung: "Phòng sạch sẽ, nhân viên thân thiện!",
+      saoBinhLuan: 4,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=54996",
+      userName: "Lê Minh C",
+    },
+  ];
 
-//   // 4️⃣ Fallback
-//   return new Date();
-// };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setComments(mockData);
+      setLoading(false);
+    }, 500);
 
-// // 🧩 Hàm format an toàn
-// const formatDateSafe = (dateString: string) => {
-//   const date = parseDate(dateString);
-//   if (!date || isNaN(date.getTime())) return "Không xác định";
-//   return format(date, "dd/MM/yyyy", { locale: vi });
-// };
+    return () => clearTimeout(timer);
+  }, []);
 
-// export default function CommentSection() {
-//   const [comments, setComments] = useState([]);
-//   const [newComment, setNewComment] = useState("");
-//   const [newRating, setNewRating] = useState(5);
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-//   // Fake API data
-//   const fakeApiResponse = {
-//     statusCode: 200,
-//     content: [
-//       {
-//         id: 8111,
-//         maPhong: 0,
-//         maNguoiBinhLuan: 0,
-//         ngayBinhLuan: "2024-10-08T15:49:50.196Z",
-//         noiDung: "Phòng rộng, view đẹp lắm chủ nhiệt tình",
-//         saoBinhLuan: 5,
-//       },
-//       {
-//         id: 8237,
-//         maPhong: 1,
-//         maNguoiBinhLuan: 1,
-//         ngayBinhLuan: "13/11/2024 09:43:33",
-//         noiDung: "Phòng tốt",
-//         saoBinhLuan: 5,
-//       },
-//       {
-//         id: 8254,
-//         maPhong: 233104,
-//         maNguoiBinhLuan: 43792,
-//         ngayBinhLuan: "2024-11-23T18:59:15.026Z",
-//         noiDung: "Đồ đạc hơi cũ nhưng vẫn ổn",
-//         saoBinhLuan: 3,
-//       },
-//       {
-//         id: 8307,
-//         maPhong: 0,
-//         maNguoiBinhLuan: 0,
-//         ngayBinhLuan: "Tue Dec 17 2024 16:55:09 GMT+0700 (Indochina Time)",
-//         noiDung: "Tuyệt Vời!",
-//         saoBinhLuan: 5,
-//       },
-//     ],
-//   };
+    if (diff < 60) return "Vừa xong";
+    if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)} ngày trước`;
 
-//   useEffect(() => {
-//     setTimeout(() => {
-//       setComments(fakeApiResponse.content);
-//     }, 500);
-//   }, []);
+    return date.toLocaleDateString("vi-VN");
+  };
 
-//   const handleSubmitComment = () => {
-//     if (newComment.trim()) {
-//       const newCmt = {
-//         id: Date.now(),
-//         maPhong: 0,
-//         maNguoiBinhLuan: 999,
-//         ngayBinhLuan: new Date().toISOString(),
-//         noiDung: newComment,
-//         saoBinhLuan: newRating,
-//       };
-//       setComments([newCmt, ...comments]);
-//       setNewComment("");
-//       setNewRating(5);
-//     }
-//   };
+  const renderStars = (rating: number): JSX.Element => {
+    return (
+      <div className="flex gap-0.5">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            size={14}
+            className={
+              i < rating ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
+            }
+          />
+        ))}
+      </div>
+    );
+  };
 
-//   return (
-//     <div className="w-full mx-auto bg-[#F6F7F8] rounded-3xl p-8 shadow-2xl transition-all">
-//       {/* Header */}
-//       <div className="mb-8">
-//         <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-//           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-//             <Star className="w-6 h-6 text-white" />
-//           </div>
-//           Đánh giá & Bình luận
-//         </h2>
-//         <p className="text-gray-700">
-//           Chia sẻ trải nghiệm của bạn về phòng này
-//         </p>
-//       </div>
+  const sortedComments: Comment[] = [...comments].sort((a, b) => {
+    if (sortBy === "newest") {
+      return (
+        new Date(b.ngayBinhLuan).getTime() - new Date(a.ngayBinhLuan).getTime()
+      );
+    }
+    if (sortBy === "highest") {
+      return b.saoBinhLuan - a.saoBinhLuan;
+    }
+    return a.saoBinhLuan - b.saoBinhLuan;
+  });
 
-//       {/* Comment Input */}
-//       <Card className="bg-white rounded-2xl mb-8 shadow-lg border-2 border-gray-100">
-//         <CardContent className="p-6">
-//           <div className="flex gap-4 mb-4">
-//             <Avatar className="w-12 h-12 border-2 border-blue-200">
-//               <AvatarImage src="https://i.pravatar.cc/150?img=15" />
-//               <AvatarFallback>KH</AvatarFallback>
-//             </Avatar>
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setSortBy(e.target.value as SortBy);
+  };
 
-//             <div className="flex-1">
-//               <Textarea
-//                 value={newComment}
-//                 onChange={(e) => setNewComment(e.target.value)}
-//                 placeholder="Chia sẻ trải nghiệm của bạn..."
-//                 className="min-h-[80px] border-2 border-gray-200 focus-visible:ring-blue-400 focus-visible:border-blue-400"
-//               />
-//             </div>
-//           </div>
+  return (
+    <div className="min-h-screen bg-linear-to-b from-blue-50 via-purple-50 to-white">
+      {/* Main Content */}
+      <div className="mx-auto px-4 py-8">
+        {/* Rating Overview Card */}
+        <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200 shadow-lg">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Đánh giá chung
+              </h2>
+              <div className="flex items-center gap-4">
+                <div className="text-5xl font-bold text-yellow-500">4.2</div>
+                <div>
+                  <div className="flex gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={20}
+                        className="fill-yellow-500 text-yellow-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-600">
+                    Dựa trên {comments.length} đánh giá
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button className="w-full md:w-auto bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300">
+              + Viết đánh giá
+            </button>
+          </div>
+        </div>
 
-//           <div className="flex items-center justify-between mt-2">
-//             <div className="flex items-center gap-4">
-//               <div className="flex items-center gap-2">
-//                 <Label className="text-sm font-semibold text-gray-700">
-//                   Đánh giá:
-//                 </Label>
-//                 <div className="flex gap-1">
-//                   {[1, 2, 3, 4, 5].map((star) => (
-//                     <button
-//                       key={star}
-//                       onClick={() => setNewRating(star)}
-//                       className="transition-transform hover:scale-110"
-//                     >
-//                       <Star
-//                         className={`w-6 h-6 ${
-//                           star <= newRating
-//                             ? "fill-yellow-400 text-yellow-400"
-//                             : "text-gray-300"
-//                         }`}
-//                       />
-//                     </button>
-//                   ))}
-//                 </div>
-//               </div>
-//               <Button
-//                 variant="ghost"
-//                 className="text-gray-500 hover:text-gray-700"
-//               >
-//                 <Smile className="w-5 h-5" />
-//               </Button>
-//             </div>
+        {/* Filter Section */}
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-gray-800">
+            Bình luận ({comments.length})
+          </h3>
+          <select
+            value={sortBy}
+            onChange={handleSortChange}
+            className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors"
+          >
+            <option value="newest">Mới nhất</option>
+            <option value="highest">Đánh giá cao nhất</option>
+            <option value="lowest">Đánh giá thấp nhất</option>
+          </select>
+        </div>
 
-//             <Button
-//               onClick={handleSubmitComment}
-//               className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
-//             >
-//               <Send className="w-4 h-4" />
-//               Gửi đánh giá
-//             </Button>
-//           </div>
-//         </CardContent>
-//       </Card>
+        {/* Comments List */}
+        <div className="space-y-4">
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+            </div>
+          ) : sortedComments.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              <p>Chưa có bình luận nào</p>
+            </div>
+          ) : (
+            sortedComments.map((comment) => (
+              <div
+                key={comment.id}
+                className="bg-white border border-gray-200 rounded-lg p-5 hover:bg-gray-50 transition-all duration-300 hover:border-blue-300 shadow-sm hover:shadow-md"
+              >
+                {/* User Info */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    <img
+                      src={comment.avatar}
+                      alt={comment.userName}
+                      className="w-12 h-12 rounded-full border-2 border-blue-300"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-semibold text-gray-800">
+                          {comment.userName}
+                        </h4>
+                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">
+                          Người dùng
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          {renderStars(comment.saoBinhLuan)}
+                          <span className="ml-1 font-semibold text-yellow-500">
+                            {comment.saoBinhLuan}.0
+                          </span>
+                        </div>
+                        <span>•</span>
+                        <span>{formatDate(comment.ngayBinhLuan)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <MoreVertical size={20} />
+                  </button>
+                </div>
 
-//       {/* Comments List */}
-//       <div className="space-y-6">
-//         {comments.length === 0 ? (
-//           <p className="text-center text-gray-500">Chưa có bình luận nào.</p>
-//         ) : (
-//           comments.map((comment) => (
-//             <Card
-//               key={comment.id}
-//               className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
-//             >
-//               <CardContent className="p-6">
-//                 <div className="flex items-start gap-4 mb-4">
-//                   <Avatar className="w-12 h-12 border-2 border-gray-200">
-//                     <AvatarImage
-//                       src={`https://i.pravatar.cc/150?img=${
-//                         (comment.maNguoiBinhLuan % 70) + 1
-//                       }`}
-//                     />
-//                     <AvatarFallback>U</AvatarFallback>
-//                   </Avatar>
+                {/* Review Content */}
+                <div className="ml-16">
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    {comment.noiDung}
+                  </p>
 
-//                   <div className="flex-1">
-//                     <div className="flex items-center gap-2 mb-1">
-//                       <span className="font-bold text-gray-900">
-//                         Người dùng #{comment.maNguoiBinhLuan}
-//                       </span>
-//                       <div className="flex gap-0.5 ml-2">
-//                         {[...Array(comment.saoBinhLuan)].map((_, i) => (
-//                           <Star
-//                             key={i}
-//                             className="w-4 h-4 fill-yellow-400 text-yellow-400"
-//                           />
-//                         ))}
-//                       </div>
-//                     </div>
-//                     <span className="text-sm text-gray-500">
-//                       {formatDateSafe(comment.ngayBinhLuan)}
-//                     </span>
-//                   </div>
-//                 </div>
+                  {/* Interaction Buttons */}
+                  <div className="flex items-center gap-6 pt-3 border-t border-gray-200">
+                    <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors group">
+                      <ThumbsUp
+                        size={18}
+                        className="group-hover:fill-blue-600"
+                      />
+                      <span className="text-sm">Hữu ích</span>
+                    </button>
+                    <button className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                      Phản hồi
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
 
-//                 <p className="text-gray-700 mb-2 leading-relaxed">
-//                   {comment.noiDung}
-//                 </p>
-//               </CardContent>
-//             </Card>
-//           ))
-//         )}
-//       </div>
+        {/* Load More Button */}
+        {!loading && comments.length > 0 && (
+          <div className="flex justify-center mt-8">
+            <button className="border border-blue-500 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300">
+              Xem thêm bình luận
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-//       {/* Load More */}
-//       <div className="text-center mt-8">
-//         <Button
-//           variant="outline"
-//           className="bg-white text-gray-700 font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105 border-2 border-gray-200 px-8 py-3"
-//         >
-//           Xem thêm bình luận
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// }
+export default MovieReviewSection;
