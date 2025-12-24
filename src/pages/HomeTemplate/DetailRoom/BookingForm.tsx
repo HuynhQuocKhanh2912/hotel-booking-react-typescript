@@ -77,8 +77,8 @@ export default function BookingForm() {
     defaultValues: {
       // id: 0,
       maPhong: 0,
-      ngayDen: null,
-      ngayDi: null,
+      // ngayDen: null,
+      // ngayDi: null,
       soLuongKhach: 0,
       maNguoiDung: 0,
     },
@@ -114,7 +114,7 @@ export default function BookingForm() {
     //   ngayDi: format(data.ngayDi, "yyyy-MM-dd"),
     // };
     handleBooking(data);
-    // console.log(payload);
+    console.log(data);
   };
 
   return (
@@ -169,8 +169,10 @@ export default function BookingForm() {
                               selected={field.value ?? undefined}
                               captionLayout="dropdown"
                               onSelect={(date) => {
+                                if (!date) return;
+                                date.setHours(12, 0, 0, 0);
                                 setOpen1(false);
-                                field.onChange(date ?? null);
+                                field.onChange(date);
                               }}
                             />
                           </PopoverContent>
@@ -216,8 +218,10 @@ export default function BookingForm() {
                               selected={field.value ?? undefined}
                               captionLayout="dropdown"
                               onSelect={(date) => {
+                                if (!date) return;
+                                date.setHours(12, 0, 0, 0);
                                 setOpen2(false);
-                                field.onChange(date ?? null);
+                                field.onChange(date);
                               }}
                             />
                           </PopoverContent>
