@@ -2,6 +2,17 @@ import type { BaseApiResponse } from "@/interfaces/base.interface";
 import type { PaginationRoom, RoomItems } from "@/interfaces/room.interface";
 import api from "./api";
 // get all rooms
+
+export const getRoomsListAllApi = async () => {
+  try {
+    const response = await api.get<BaseApiResponse<RoomItems[]>>('phong-thue/');
+    return response.data.content;
+  } catch (error) {
+    console.log("🎄 ~ getRoomsListAllApi ~ error:", error)
+    throw error;
+  }
+}
+
 export const getRoomListApi = async (
   pageIndex: number,
   pageSize: number,

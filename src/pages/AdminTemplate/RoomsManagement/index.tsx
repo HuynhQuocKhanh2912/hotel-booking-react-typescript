@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   Plus,
@@ -18,77 +18,42 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useRoomListQuery, useUsersListAllQuery } from "@/hooks/useRoomQuery";
+import type { RoomItems } from "@/interfaces/room.interface";
 
 const RoomsManagement = () => {
-  const [rooms, setRooms] = useState([
-    {
-      id: 1,
-      tenPhong: "NewApt D1 - Cozy studio - NU apt - 500m Bui Vien!",
-      khach: 3,
-      phongNgu: 1,
-      giuong: 1,
-      phongTam: 1,
-      moTa: "Tự nhận phòng bằng khóa thông minh. Chủ nhà siêu cấp có kinh nghiệm cao.",
-      giaTien: 28,
-      mayGiat: true,
-      banLa: true,
-      tivi: true,
-      dieuHoa: false,
-      wifi: true,
-      bep: false,
-      doXe: true,
-      hoBoi: true,
-      banUi: true,
-      maViTri: 1,
-      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/phong1.jpg",
-    },
-    {
-      id: 2,
-      tenPhong: "STUDIO MỚI NETFLIX MIỄN PHÍ/ĐỖ XE MIỄN PHÍ",
-      khach: 2,
-      phongNgu: 1,
-      giuong: 1,
-      phongTam: 1,
-      moTa: "Không gian riêng để làm việc. Tự nhận phòng bằng khóa thông minh.",
-      giaTien: 21,
-      mayGiat: true,
-      banLa: true,
-      tivi: true,
-      dieuHoa: true,
-      wifi: true,
-      bep: true,
-      doXe: false,
-      hoBoi: false,
-      banUi: false,
-      maViTri: 1,
-      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/phong2.png",
-    },
-    {
-      id: 3,
-      tenPhong: "Căn hộ cao cấp gần trung tâm",
-      khach: 4,
-      phongNgu: 2,
-      giuong: 2,
-      phongTam: 2,
-      moTa: "Căn hộ rộng rãi, hiện đại với đầy đủ tiện nghi. View đẹp.",
-      giaTien: 45,
-      mayGiat: true,
-      banLa: true,
-      tivi: true,
-      dieuHoa: true,
-      wifi: true,
-      bep: true,
-      doXe: true,
-      hoBoi: true,
-      banUi: true,
-      maViTri: 2,
-      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/phong3.jpg",
-    },
-  ]);
+  // Store
+  // const { isModal, setIsModal, setIdRoom } = useRoomAdminStore();
 
+  // State
+  const itemRoomNumber: number = 9;
   const [viewMode, setViewMode] = useState("grid");
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [detailRoom, setDetailRoom] = useState(null);
+  const [detailRoom, setDetailRoom] = useState<RoomItems | null>(null);
+  const [listRooms, setListRooms] = useState<RoomItems[] | null>(null);
+  const [pagiCurrent, setPagiCurrent] = useState(1);
+
+  // const keyDebounce = useDebounce(watchSearch, 500);
+  const keyDebounce = "";
+  // API
+  const { data: dataRoomListAll } = useUsersListAllQuery();
+  const { data: dataRoomList } = useRoomListQuery(
+    pagiCurrent,
+    itemRoomNumber,
+    keyDebounce
+  );
+  console.log(dataRoomListAll);
+
+  useEffect(() => {
+    const list = dataRoomList?.data ?? [];
+    // const result =
+    //   watchSelect === "ALL"
+    //     ? list
+    //     : list.filter(
+    //         (f) => f.role.toUpperCase() === watchSelect.toUpperCase()
+    //       );
+    setListRooms(list);
+  }, [dataRoomList, pagiCurrent]);
 
   // Handler Amenities
   const getAmenities = (room) => {
@@ -130,16 +95,21 @@ const RoomsManagement = () => {
     ].filter(Boolean).length;
   };
 
+
   const stats = {
-    total: rooms.length,
-    avgPrice: Math.round(
-      rooms.reduce((sum, r) => sum + r.giaTien, 0) / rooms.length
-    ),
-    maxGuests: Math.max(...rooms.map((r) => r.khach)),
-    totalBedrooms: rooms.reduce((sum, r) => sum + r.phongNgu, 0),
+    total: dataRoomListAll?.length || 0,
+    avgPrice: dataRoomListAll && dataRoomListAll.length > 0
+      ? Math.round(
+          dataRoomListAll.reduce((sum, r) => sum + r.giaTien, 0) / dataRoomListAll.length
+        )
+      : 0,
+    maxGuests: dataRoomListAll && dataRoomListAll.length > 0
+      ? Math.max(...dataRoomListAll.map((r) => r.khach))
+      : 0,
+    totalBedrooms: dataRoomListAll?.reduce((sum, r) => sum + r.phongNgu, 0) || 0,
   };
 
-  const showRoomDetail = (room) => {
+  const showRoomDetail = (room : RoomItems) => {
     setDetailRoom(room);
     setShowDetailModal(true);
   };
@@ -239,7 +209,7 @@ const RoomsManagement = () => {
       {/* Rooms Table && Grid */}
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-4 lg:gap-6 animate-fade-in-up">
-          {rooms.map((room) => (
+          {listRooms?.map((room) => (
             <div
               key={room.id}
               className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200 hover:shadow-lg transition-all"
@@ -350,7 +320,7 @@ const RoomsManagement = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {rooms.map((room) => (
+                {listRooms?.map((room) => (
                   <tr
                     key={room.id}
                     className="hover:bg-slate-50 transition-colors"
@@ -447,9 +417,7 @@ const RoomsManagement = () => {
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <span className="text-2xl mb-2 block">🛏️</span>
                   <div className="text-sm text-slate-600">Phòng ngủ</div>
-                  <div className="text-xl font-bold">
-                    {detailRoom.phongNgu}
-                  </div>
+                  <div className="text-xl font-bold">{detailRoom.phongNgu}</div>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-lg">
                   <span className="text-2xl mb-2 block">🛏️</span>
@@ -459,9 +427,7 @@ const RoomsManagement = () => {
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <span className="text-2xl mb-2 block">🚿</span>
                   <div className="text-sm text-slate-600">Phòng tắm</div>
-                  <div className="text-xl font-bold">
-                    {detailRoom.phongTam}
-                  </div>
+                  <div className="text-xl font-bold">{detailRoom.phongTam}</div>
                 </div>
               </div>
 
