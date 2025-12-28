@@ -1,63 +1,35 @@
 import { useState, useEffect, FC } from "react";
 import { Star, ThumbsUp, MoreVertical } from "lucide-react";
-
-interface Comment {
-  id: number;
-  maPhong: number;
-  maNguoiBinhLuan: number;
-  ngayBinhLuan: Date;
-  noiDung: string;
-  saoBinhLuan: number;
-}
-
-type SortBy = "newest" | "highest" | "lowest";
+import { getCommentsList } from "@/services/comments.api";
+import { useQuery } from "@tanstack/react-query";
+import { useRoomDetail } from "@/stores/useRoomDetails.store";
+import type { CommentsID } from "@/interfaces/commentsID.interface";
 
 const MovieReviewSection: FC = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [sortBy, setSortBy] = useState<SortBy>("newest");
+  const [getId, getSetId] = useState<number | null>(null);
+  const idRoom = useRoomDetail((state) => state.roomID);
 
-  const mockData: Comment[] = [
-    {
-      id: 20434,
-      maPhong: 1,
-      maNguoiBinhLuan: 54994,
-      ngayBinhLuan: "2025-10-21T07:37:40.511Z",
-      noiDung: "Phòng ổn, nhưng test này bỏ qua phần sao.",
-      saoBinhLuan: 0,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=54994",
-      userName: "Nguyễn Văn A",
-    },
-    {
-      id: 20435,
-      maPhong: 1,
-      maNguoiBinhLuan: 54995,
-      ngayBinhLuan: "2025-10-21T07:50:05.360Z",
-      noiDung: "Phòng ổn, nhưng test này bỏ qua phần sao.",
-      saoBinhLuan: 0,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=54995",
-      userName: "Trần Thị B",
-    },
-    {
-      id: 20436,
-      maPhong: 1,
-      maNguoiBinhLuan: 54996,
-      ngayBinhLuan: "2025-10-21T07:50:06.262Z",
-      noiDung: "Phòng sạch sẽ, nhân viên thân thiện!",
-      saoBinhLuan: 4,
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=54996",
-      userName: "Lê Minh C",
-    },
-  ];
+  const { data: listComments, isPending } = useQuery<CommentsID[]>({
+    queryKey: ["commentsList", idRoom?.id],
+    queryFn: () => getCommentsList(Number(idRoom?.id)),
+    enabled: !!idRoom?.id,
+  });
+  console.log(listComments);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setComments(mockData);
-      setLoading(false);
-    }, 500);
+    if (idRoom?.id) {
+      getSetId(idRoom.id);
+    }
+  }, [idRoom?.id]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setComments(mockData);
+  //     setLoading(false);
+  //   }, 500);
+
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -88,22 +60,6 @@ const MovieReviewSection: FC = () => {
     );
   };
 
-  const sortedComments: Comment[] = [...comments].sort((a, b) => {
-    if (sortBy === "newest") {
-      return (
-        new Date(b.ngayBinhLuan).getTime() - new Date(a.ngayBinhLuan).getTime()
-      );
-    }
-    if (sortBy === "highest") {
-      return b.saoBinhLuan - a.saoBinhLuan;
-    }
-    return a.saoBinhLuan - b.saoBinhLuan;
-  });
-
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
-    setSortBy(e.target.value as SortBy);
-  };
-
   return (
     <div className="min-h-screen bg-linear-to-b from-blue-50 via-purple-50 to-white">
       {/* Main Content */}
@@ -128,7 +84,7 @@ const MovieReviewSection: FC = () => {
                     ))}
                   </div>
                   <p className="text-gray-600">
-                    Dựa trên {comments.length} đánh giá
+                    Dựa trên {listComments?.length} đánh giá
                   </p>
                 </div>
               </div>
@@ -140,9 +96,9 @@ const MovieReviewSection: FC = () => {
         </div>
 
         {/* Filter Section */}
-        <div className="flex justify-between items-center mb-6">
+        {/* <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-gray-800">
-            Bình luận ({comments.length})
+            Bình luận ({listComments?.length})
           </h3>
           <select
             value={sortBy}
@@ -153,20 +109,20 @@ const MovieReviewSection: FC = () => {
             <option value="highest">Đánh giá cao nhất</option>
             <option value="lowest">Đánh giá thấp nhất</option>
           </select>
-        </div>
+        </div> */}
 
         {/* Comments List */}
         <div className="space-y-4">
-          {loading ? (
+          {isPending ? (
             <div className="flex justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
             </div>
-          ) : sortedComments.length === 0 ? (
+          ) : listComments?.length === 0 ? (
             <div className="text-center py-12 text-gray-400">
               <p>Chưa có bình luận nào</p>
             </div>
           ) : (
-            sortedComments.map((comment) => (
+            listComments?.map((comment) => (
               <div
                 key={comment.id}
                 className="bg-white border border-gray-200 rounded-lg p-5 hover:bg-gray-50 transition-all duration-300 hover:border-blue-300 shadow-sm hover:shadow-md"
@@ -175,14 +131,14 @@ const MovieReviewSection: FC = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-4 flex-1">
                     <img
-                      src={comment.avatar}
-                      alt={comment.userName}
+                      src={comment.tenNguoiBinhLuan}
+                      alt={comment.avatar}
                       className="w-12 h-12 rounded-full border-2 border-blue-300"
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <h4 className="font-semibold text-gray-800">
-                          {comment.userName}
+                          {comment.tenNguoiBinhLuan}
                         </h4>
                         <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">
                           Người dùng
@@ -231,13 +187,13 @@ const MovieReviewSection: FC = () => {
         </div>
 
         {/* Load More Button */}
-        {!loading && comments.length > 0 && (
+        {/* {!isPending && listComments?.length > 0 && (
           <div className="flex justify-center mt-8">
             <button className="border border-blue-500 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300">
               Xem thêm bình luận
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
