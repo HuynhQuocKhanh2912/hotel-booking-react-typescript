@@ -1,9 +1,13 @@
 import { useState, useEffect, FC } from "react";
-import { Star, ThumbsUp, MoreVertical } from "lucide-react";
+import { Star, ThumbsUp, MoreVertical, Send } from "lucide-react";
 import { getCommentsList } from "@/services/comments.api";
 import { useQuery } from "@tanstack/react-query";
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
 import type { CommentsID } from "@/interfaces/commentsID.interface";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 const MovieReviewSection: FC = () => {
   const [getId, getSetId] = useState<number | null>(null);
@@ -14,22 +18,12 @@ const MovieReviewSection: FC = () => {
     queryFn: () => getCommentsList(Number(idRoom?.id)),
     enabled: !!idRoom?.id,
   });
-  console.log(listComments);
 
   useEffect(() => {
     if (idRoom?.id) {
       getSetId(idRoom.id);
     }
   }, [idRoom?.id]);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setComments(mockData);
-  //     setLoading(false);
-  //   }, 500);
-
-  //   return () => clearTimeout(timer);
-  // }, []);
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -89,27 +83,68 @@ const MovieReviewSection: FC = () => {
                 </div>
               </div>
             </div>
-            <button className="w-full md:w-auto bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300">
-              + Viết đánh giá
-            </button>
           </div>
         </div>
 
-        {/* Filter Section */}
-        {/* <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-gray-800">
-            Bình luận ({listComments?.length})
-          </h3>
-          <select
-            value={sortBy}
-            onChange={handleSortChange}
-            className="bg-white text-gray-800 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors"
-          >
-            <option value="newest">Mới nhất</option>
-            <option value="highest">Đánh giá cao nhất</option>
-            <option value="lowest">Đánh giá thấp nhất</option>
-          </select>
-        </div> */}
+        {/* Comment Form */}
+        <div className="space-y-8 p-8">
+          {/* Rating */}
+          <div className="space-y-4">
+            <Label className="text-sm font-semibold">
+              Đánh giá của bạn <span className="text-red-500">*</span>
+            </Label>
+
+            <div className="flex items-center gap-4">
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Button
+                    key={star}
+                    variant="ghost"
+                    size="icon"
+                    className="hover:scale-125 transition-transform"
+                  >
+                    <Star className="h-8 w-8 text-muted-foreground hover:fill-yellow-400 hover:text-yellow-400" />
+                  </Button>
+                ))}
+              </div>
+
+              <Badge
+                variant="secondary"
+                className="bg-purple-100 text-purple-700 px-4 py-1"
+              >
+                Tuyệt vời!
+              </Badge>
+            </div>
+          </div>
+
+          {/* Comment */}
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">
+              Nhận xét của bạn <span className="text-red-500">*</span>
+            </Label>
+
+            <Textarea
+              placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
+              className="min-h-[120px] resize-none"
+              maxLength={500}
+            />
+
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Mô tả chi tiết sẽ giúp người khác hơn</span>
+              <span>0/500</span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 border-t pt-4">
+            <Button variant="outline">Hủy</Button>
+
+            <Button className="gap-2">
+              <Send className="h-4 w-4" />
+              Gửi đánh giá
+            </Button>
+          </div>
+        </div>
 
         {/* Comments List */}
         <div className="space-y-4">
@@ -185,15 +220,6 @@ const MovieReviewSection: FC = () => {
             ))
           )}
         </div>
-
-        {/* Load More Button */}
-        {/* {!isPending && listComments?.length > 0 && (
-          <div className="flex justify-center mt-8">
-            <button className="border border-blue-500 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300">
-              Xem thêm bình luận
-            </button>
-          </div>
-        )} */}
       </div>
     </div>
   );
