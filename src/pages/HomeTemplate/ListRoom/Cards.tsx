@@ -83,34 +83,35 @@ export default function RoomListing() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 via-white to-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
             Khám phá khách sạn
           </h1>
-          <p className="text-slate-600">
+          <p className="text-lg text-gray-600">
             Tìm kiếm nơi ở hoàn hảo cho kỳ nghỉ của bạn
           </p>
         </div>
 
         {/* Location Filter */}
-        <Card className="mb-8 border-gray-200">
-          <CardContent className="flex flex-wrap flex-col pt-6">
-            <div className="gap-2 mb-6">
+        <Card className="mb-10 border border-gray-200 shadow-lg bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-gray-200">
               <Filter className="w-5 h-5 text-blue-600" />
-              <span className="font-bold text-gray-900 text-lg">
+              <span className="font-bold text-gray-900 text-xl">
                 Lọc tìm kiếm
               </span>
             </div>
-            <div className="gap-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Province Select */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-semibold text-gray-700">
                   Tỉnh / Thành phố
                 </label>
                 <Select onValueChange={handleSelectProvince} value={province}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-blue-400 transition-colors">
                     <SelectValue
                       placeholder="Chọn tỉnh / thành phố"
                       className="w-full"
@@ -129,7 +130,7 @@ export default function RoomListing() {
               </div>
 
               {/* Location Select */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="block text-sm font-semibold text-gray-700">
                   Vị trí
                 </label>
@@ -137,7 +138,7 @@ export default function RoomListing() {
                   disabled={!province}
                   onValueChange={(value) => handleGetIDLocation(value)}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-blue-400 transition-colors disabled:opacity-50">
                     <SelectValue
                       placeholder={
                         province ? "Chọn vị trí" : "Vui lòng chọn tỉnh trước"
@@ -162,27 +163,28 @@ export default function RoomListing() {
           </CardContent>
         </Card>
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
           id="toSection"
         >
           {roomsToRender.map((room: RoomItems) => (
             <div
               key={room.id}
-              className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200"
+              onClick={() => handleGetRoomsById(room.id)}
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 hover:border-blue-300 cursor-pointer"
             >
               {/* Image Container */}
-              <div className="relative h-72 overflow-hidden bg-linear-to-br from-gray-200 to-gray-300">
+              <div className="relative h-80 overflow-hidden bg-linear-to-br from-gray-200 to-gray-300">
                 <img
                   src={room.hinhAnh}
                   alt={room.tenPhong}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 {/* Location Badge */}
-                <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1">
+                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 shadow-md border border-white/50">
                   <MapPin className="w-4 h-4 text-blue-600" />
                   <span className="text-sm font-semibold text-gray-900">
                     {room.maViTri}
@@ -190,61 +192,69 @@ export default function RoomListing() {
                 </div>
 
                 {/* Price Badge */}
-                <div className="absolute bottom-4 right-4 bg-linear-to-r from-blue-600 to-blue-700 text-white rounded-lg px-4 py-2 shadow-lg">
-                  <p className="text-2xl font-bold">${room.giaTien}</p>
-                  <p className="text-xs text-blue-100">/đêm</p>
+                <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm rounded-xl px-5 py-3 shadow-xl border border-white/50">
+                  <div className="flex items-baseline gap-1">
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${room.giaTien?.toLocaleString("en-US") || "0"}
+                    </p>
+                    <p className="text-xs text-gray-600 font-medium">/đêm</p>
+                  </div>
                 </div>
               </div>
 
               {/* Content */}
-              <div className="p-5">
+              <div className="p-6">
                 {/* Title */}
-                <h3 className="font-bold text-gray-900 text-base mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h3 className="font-bold text-gray-900 text-lg mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300">
                   {room.tenPhong}
                 </h3>
 
                 {/* Rating */}
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2.5 mb-5">
                   <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
+                    <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                    <span className="text-sm font-semibold text-gray-900">
+                      5.0
+                    </span>
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">
-                    5.0
+                  <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+                  <span className="text-sm text-gray-600 font-medium">
+                    128 đánh giá
                   </span>
-                  <span className="text-xs text-gray-500">(128)</span>
                 </div>
 
                 {/* Room Info */}
-                <div className="grid grid-cols-3 gap-3 mb-4 pb-4 border-b border-gray-200">
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-gray-900">
+                <div className="grid grid-cols-3 gap-4 mb-5 pb-5 border-b border-gray-200">
+                  <div className="text-center bg-gray-50 rounded-lg py-3">
+                    <p className="text-xl font-bold text-gray-900">
                       {room.phongNgu}
                     </p>
-                    <p className="text-xs text-gray-600">Phòng</p>
+                    <p className="text-xs text-gray-600 font-medium mt-1">
+                      Phòng
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-gray-900">
+                  <div className="text-center bg-gray-50 rounded-lg py-3">
+                    <p className="text-xl font-bold text-gray-900">
                       {room.giuong}
                     </p>
-                    <p className="text-xs text-gray-600">Giường</p>
+                    <p className="text-xs text-gray-600 font-medium mt-1">
+                      Giường
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-gray-900">
+                  <div className="text-center bg-gray-50 rounded-lg py-3">
+                    <p className="text-xl font-bold text-gray-900">
                       {room.phongTam}
                     </p>
-                    <p className="text-xs text-gray-600">Phòng tắm</p>
+                    <p className="text-xs text-gray-600 font-medium mt-1">
+                      Phòng tắm
+                    </p>
                   </div>
                 </div>
 
                 {/* Amenities */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="flex flex-wrap gap-2 mb-5">
                   {room.wifi && (
-                    <div className="flex items-center justify-center gap-1 bg-blue-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                       <Wifi className="w-4 h-4 text-blue-600" />
                       <span className="text-xs text-gray-700 font-medium">
                         Wifi
@@ -252,7 +262,7 @@ export default function RoomListing() {
                     </div>
                   )}
                   {room.tivi && (
-                    <div className="flex items-center justify-center gap-1 bg-blue-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                       <Tv className="w-4 h-4 text-blue-600" />
                       <span className="text-xs text-gray-700 font-medium">
                         TV
@@ -260,7 +270,7 @@ export default function RoomListing() {
                     </div>
                   )}
                   {room.dieuHoa && (
-                    <div className="flex items-center justify-center gap-1 bg-blue-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                       <Wind className="w-4 h-4 text-blue-600" />
                       <span className="text-xs text-gray-700 font-medium">
                         Điều hòa
@@ -268,7 +278,7 @@ export default function RoomListing() {
                     </div>
                   )}
                   {room.bep && (
-                    <div className="flex items-center justify-center gap-1 bg-blue-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                       <Utensils className="w-4 h-4 text-blue-600" />
                       <span className="text-xs text-gray-700 font-medium">
                         Bếp
@@ -276,7 +286,7 @@ export default function RoomListing() {
                     </div>
                   )}
                   {room.doXe && (
-                    <div className="flex items-center justify-center gap-1 bg-blue-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                       <Car className="w-4 h-4 text-blue-600" />
                       <span className="text-xs text-gray-700 font-medium">
                         Đỗ xe
@@ -284,7 +294,7 @@ export default function RoomListing() {
                     </div>
                   )}
                   {room.hoBoi && (
-                    <div className="flex items-center justify-center gap-1 bg-blue-50 rounded-lg p-2">
+                    <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
                       <Waves className="w-4 h-4 text-blue-600" />
                       <span className="text-xs text-gray-700 font-medium">
                         Hồ bơi
@@ -294,14 +304,17 @@ export default function RoomListing() {
                 </div>
 
                 {/* Description */}
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                <p className="text-sm text-gray-600 mb-5 line-clamp-2 leading-relaxed">
                   {room.moTa}
                 </p>
 
                 {/* CTA Button */}
                 <Button
-                  onClick={() => handleGetRoomsById(room.id)}
-                  className="cursor-pointer w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleGetRoomsById(room.id);
+                  }}
+                  className="cursor-pointer w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-6 px-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   Xem chi tiết
                 </Button>
@@ -309,12 +322,16 @@ export default function RoomListing() {
             </div>
           ))}
         </div>
-        <PaginationLayout
-          pageSize={pageSize}
-          pageIndex={pageIndex}
-          totalRow={listRooms?.totalRow ?? 0}
-          onPageChange={(page) => setPageIndex(page)}
-        />
+        {!selectID && (
+          <div className="mt-12">
+            <PaginationLayout
+              pageSize={pageSize}
+              pageIndex={pageIndex}
+              totalRow={listRooms?.totalRow ?? 0}
+              onPageChange={(page) => setPageIndex(page)}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
