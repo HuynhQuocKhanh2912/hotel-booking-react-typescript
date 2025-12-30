@@ -1,4 +1,5 @@
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect } from "react";
+import type { FC } from "react";
 import { Star, ThumbsUp, MoreVertical, Send } from "lucide-react";
 import { getCommentsList } from "@/services/comments.api";
 import { useQuery } from "@tanstack/react-query";
@@ -10,20 +11,54 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 const MovieReviewSection: FC = () => {
-  const [getId, getSetId] = useState<number | null>(null);
   const idRoom = useRoomDetail((state) => state.roomID);
+  const [expandedComments, setExpandedComments] = useState<Set<number>>(
+    new Set()
+  );
+  const [clampedComments, setClampedComments] = useState<Set<number>>(
+    new Set()
+  );
 
-  const { data: listComments, isPending } = useQuery<CommentsID[]>({
+  const { data: listComments, isPending } = useQuery<CommentsID[] | undefined>({
     queryKey: ["commentsList", idRoom?.id],
     queryFn: () => getCommentsList(Number(idRoom?.id)),
     enabled: !!idRoom?.id,
   });
 
+  // Reset clamped comments khi listComments thay đổi
   useEffect(() => {
-    if (idRoom?.id) {
-      getSetId(idRoom.id);
+    setClampedComments(new Set());
+    setExpandedComments(new Set());
+  }, [listComments?.length]);
+
+  const checkClamped = (
+    element: HTMLParagraphElement | null,
+    commentId: number
+  ) => {
+    if (
+      !element ||
+      expandedComments.has(commentId) ||
+      clampedComments.has(commentId)
+    ) {
+      return;
     }
-  }, [idRoom?.id]);
+    // Kiểm tra xem text có bị clamp không (chỉ khi đang ở trạng thái collapsed)
+    if (element.scrollHeight > element.clientHeight) {
+      setClampedComments((prev) => new Set(prev).add(commentId));
+    }
+  };
+
+  const toggleExpand = (commentId: number) => {
+    setExpandedComments((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(commentId)) {
+        newSet.delete(commentId);
+      } else {
+        newSet.add(commentId);
+      }
+      return newSet;
+    });
+  };
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -38,7 +73,7 @@ const MovieReviewSection: FC = () => {
     return date.toLocaleDateString("vi-VN");
   };
 
-  const renderStars = (rating: number): JSX.Element => {
+  const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5">
         {[...Array(5)].map((_, i) => (
@@ -87,62 +122,68 @@ const MovieReviewSection: FC = () => {
         </div>
 
         {/* Comment Form */}
-        <div className="space-y-8 p-8">
-          {/* Rating */}
-          <div className="space-y-4">
-            <Label className="text-sm font-semibold">
-              Đánh giá của bạn <span className="text-red-500">*</span>
-            </Label>
+        <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200 shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Viết đánh giá
+          </h2>
 
-            <div className="flex items-center gap-4">
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Button
-                    key={star}
-                    variant="ghost"
-                    size="icon"
-                    className="hover:scale-125 transition-transform"
-                  >
-                    <Star className="h-8 w-8 text-muted-foreground hover:fill-yellow-400 hover:text-yellow-400" />
-                  </Button>
-                ))}
+          <div className="space-y-6">
+            {/* Rating */}
+            <div className="space-y-3">
+              <Label className="text-sm font-semibold text-gray-700">
+                Đánh giá của bạn <span className="text-red-500">*</span>
+              </Label>
+
+              <div className="flex items-center gap-4">
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Button
+                      key={star}
+                      variant="ghost"
+                      size="icon"
+                      className="hover:scale-125 transition-transform"
+                    >
+                      <Star className="h-8 w-8 text-muted-foreground hover:fill-yellow-400 hover:text-yellow-400" />
+                    </Button>
+                  ))}
+                </div>
+
+                <Badge
+                  variant="secondary"
+                  className="bg-purple-100 text-purple-700 px-4 py-1"
+                >
+                  Tuyệt vời!
+                </Badge>
               </div>
-
-              <Badge
-                variant="secondary"
-                className="bg-purple-100 text-purple-700 px-4 py-1"
-              >
-                Tuyệt vời!
-              </Badge>
             </div>
-          </div>
 
-          {/* Comment */}
-          <div className="space-y-3">
-            <Label className="text-sm font-semibold">
-              Nhận xét của bạn <span className="text-red-500">*</span>
-            </Label>
+            {/* Comment */}
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold text-gray-700">
+                Nhận xét của bạn <span className="text-red-500">*</span>
+              </Label>
 
-            <Textarea
-              placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
-              className="min-h-[120px] resize-none"
-              maxLength={500}
-            />
+              <Textarea
+                placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
+                className="min-h-[120px] resize-none"
+                maxLength={500}
+              />
 
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Mô tả chi tiết sẽ giúp người khác hơn</span>
-              <span>0/500</span>
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Mô tả chi tiết sẽ giúp người khác hơn</span>
+                <span>0/500</span>
+              </div>
             </div>
-          </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 border-t pt-4">
-            <Button variant="outline">Hủy</Button>
+            {/* Actions */}
+            <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
+              <Button variant="outline">Hủy</Button>
 
-            <Button className="gap-2">
-              <Send className="h-4 w-4" />
-              Gửi đánh giá
-            </Button>
+              <Button className="gap-2">
+                <Send className="h-4 w-4" />
+                Gửi đánh giá
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -198,9 +239,27 @@ const MovieReviewSection: FC = () => {
 
                 {/* Review Content */}
                 <div className="ml-16">
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    {comment.noiDung}
-                  </p>
+                  <div>
+                    <p
+                      ref={(el) => checkClamped(el, comment.id)}
+                      className={`text-gray-700 leading-relaxed mb-2 ${
+                        expandedComments.has(comment.id) ? "" : "line-clamp-2"
+                      }`}
+                    >
+                      {comment.noiDung}
+                    </p>
+
+                    {clampedComments.has(comment.id) && (
+                      <button
+                        onClick={() => toggleExpand(comment.id)}
+                        className="cursor-pointer text-blue-500 text-sm font-medium hover:underline"
+                      >
+                        {expandedComments.has(comment.id)
+                          ? "Thu gọn"
+                          : "Xem thêm"}
+                      </button>
+                    )}
+                  </div>
 
                   {/* Interaction Buttons */}
                   <div className="flex items-center gap-6 pt-3 border-t border-gray-200">

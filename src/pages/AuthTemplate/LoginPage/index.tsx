@@ -10,11 +10,12 @@ import { loginApi } from "@/services/auth.api";
 import { useAuthStore } from "@/stores/auth.store";
 import { useNavigate } from "react-router-dom";
 
+// Schema for type inference
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const schema = z.object({
   email: z.string().nonempty("Không bỏ trống"),
   password: z.string().nonempty("Không bỏ trống"),
 });
-console.log(schema);
 
 type LoginFormInput = z.infer<typeof schema>;
 
@@ -39,7 +40,7 @@ export default function LoginPage() {
       const isUser = currentUser.user.role === "USER";
       navigate(isUser ? "/" : "/dashboard");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.log(error);
     },
   });
@@ -47,78 +48,117 @@ export default function LoginPage() {
     handleLogin(data);
   };
   return (
-    <>
-      <Card className="w-full max-w-md shadow-2xl rounded-3xl border-2 border-blue-100 bg-white/90 backdrop-blur">
-        <CardHeader className="text-center pb-2">
-          <div className="mx-auto w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-            <LogIn className="text-white w-8 h-8" />
+    <div className="w-full max-w-md">
+      <Card className="shadow-2xl rounded-2xl border border-gray-200 bg-white overflow-hidden pt-0">
+        <CardHeader className="text-center pb-6 pt-8 bg-linear-to-br from-blue-50 to-indigo-50 border-b border-gray-200">
+          <div className="mx-auto w-20 h-20 bg-linear-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mb-4 shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+            <LogIn className="text-white w-10 h-10" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-800">
-            Đăng nhập tài khoản
+          <CardTitle className="text-3xl font-bold text-gray-900 tracking-tight">
+            Đăng nhập
           </CardTitle>
-          <p className="text-sm text-gray-500 mt-1">
-            Vui lòng nhập thông tin để tiếp tục
+          <p className="text-base text-gray-600 mt-2">
+            Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn
           </p>
         </CardHeader>
 
-        <CardContent>
-          {/* Email */}
-          <form className="space-y-6 mt-4" onSubmit={handleSubmit(onSubmit)}>
+        <CardContent className="p-8">
+          <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+            {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-gray-700">
+              <Label
+                htmlFor="email"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                 <Input
                   {...register("email")}
+                  id="email"
                   type="email"
                   placeholder="Nhập email của bạn"
-                  className="pl-10 border-2 border-blue-100 focus-visible:ring-blue-400 focus-visible:border-blue-400 rounded-xl"
+                  className="pl-12 pr-4 h-12 border-2 border-gray-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-xl transition-all duration-200 bg-gray-50 focus:bg-white"
                 />
               </div>
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-semibold text-gray-700">
+              <Label
+                htmlFor="password"
+                className="text-sm font-semibold text-gray-700"
+              >
                 Mật khẩu
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 w-5 h-5" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                 <Input
                   {...register("password")}
+                  id="password"
                   type="password"
-                  placeholder="Nhập mật khẩu"
-                  className="pl-10 border-2 border-blue-100 focus-visible:ring-blue-400 focus-visible:border-blue-400 rounded-xl"
+                  placeholder="Nhập mật khẩu của bạn"
+                  className="pl-12 pr-4 h-12 border-2 border-gray-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500 rounded-xl transition-all duration-200 bg-gray-50 focus:bg-white"
                 />
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Forgot Password */}
+            <div className="flex justify-end">
+              <a
+                href="#"
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+              >
+                Quên mật khẩu?
+              </a>
             </div>
 
             {/* Button */}
-            <Button className="w-full bg-linear-to-r from-blue-500 to-blue-600 text-white font-semibold py-2 rounded-xl shadow-lg hover:shadow-xl transition-transform hover:scale-[1.02] flex items-center justify-center gap-2">
-              <LogIn className="w-4 h-4" />
-              {isPending ? "Đang Đăng Nhập..." : "Đăng nhập"}
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full h-12 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              <LogIn className="w-5 h-5 mr-2" />
+              {isPending ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
           </form>
 
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-gray-500">Hoặc</span>
+            </div>
+          </div>
+
           {/* Extra links */}
-          <div className="text-center mt-4 text-sm text-gray-600">
-            <p>
-              Quên mật khẩu?{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                Khôi phục ngay
-              </a>
-            </p>
-            <p className="mt-2">
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
               Chưa có tài khoản?{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                Đăng ký
+              <a
+                href="#"
+                className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+              >
+                Đăng ký ngay
               </a>
             </p>
           </div>
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }

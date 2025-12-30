@@ -122,42 +122,56 @@ export default function BookingForm() {
       <div className="sticky top-6">
         <div className="bg-white rounded-3xl p-8 shadow-2xl border-2 border-purple-100">
           {/* Price */}
-          <div className="mb-6 pb-6 border-b border-gray-100">
-            <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-bold bg-linear-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                ${room?.giaTien}
-              </span>
-              <span className="text-gray-600 text-lg">/đêm</span>
+          <div className="mb-8 pb-6 border-b border-gray-200">
+            <div className="flex items-end gap-2 mb-4">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-extrabold text-gray-900 tracking-tight">
+                  ${room?.giaTien ? room.giaTien.toLocaleString("en-US") : "0"}
+                </span>
+                <span className="text-base font-medium text-gray-500 mb-1">
+                  /đêm
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              <span className="font-semibold">4.9</span>
-              <span className="text-gray-600">· 127 đánh giá</span>
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5">
+                <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                <span className="font-semibold text-gray-900 text-sm">4.9</span>
+              </div>
+              <span className="w-1 h-1 rounded-full bg-gray-400"></span>
+              <span className="text-sm text-gray-600 font-medium">
+                127 đánh giá
+              </span>
             </div>
           </div>
           {/* Booking Form */}
           <form onSubmit={handleSubmit(onsubmit)}>
-            <div className="space-y-4 mb-6">
-              <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-5 mb-6">
+              {/* Date Fields */}
+              <div className="grid grid-cols-2 gap-4">
                 <Controller
                   name="ngayDen"
                   control={control}
                   render={({ field }) => (
-                    <>
-                      <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
-                        <label className="text-xs font-semibold text-gray-600 block mb-1">
+                    <div className="space-y-1.5">
+                      <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-400 transition-colors bg-gray-50/50">
+                        <Label className="text-xs font-semibold text-gray-700 block mb-2">
                           Nhận phòng
-                        </label>
+                        </Label>
                         <Popover open={open1} onOpenChange={setOpen1}>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
-                              className="w-full justify-between font-normal border-none shadow-none pl-2"
+                              className="w-full justify-between font-normal border-none shadow-none bg-transparent hover:bg-transparent p-0 h-auto text-gray-900"
                             >
-                              {field.value
-                                ? format(field.value, "dd/MM/yyyy")
-                                : "dd/MM/yyyy"}
-                              <CalendarDays />
+                              <span
+                                className={field.value ? "" : "text-gray-400"}
+                              >
+                                {field.value
+                                  ? format(field.value, "dd/MM/yyyy")
+                                  : "Chọn ngày"}
+                              </span>
+                              <CalendarDays className="h-5 w-5 text-gray-500" />
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent
@@ -179,34 +193,37 @@ export default function BookingForm() {
                         </Popover>
                       </div>
                       {errors.ngayDen && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p className="text-xs text-red-500 mt-1">
                           {errors.ngayDen.message}
                         </p>
                       )}
-                    </>
+                    </div>
                   )}
                 />
                 <Controller
                   name="ngayDi"
                   control={control}
                   render={({ field }) => (
-                    <>
-                      <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
-                        <label className="text-xs font-semibold text-gray-600 block mb-1">
+                    <div className="space-y-1.5">
+                      <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-400 transition-colors bg-gray-50/50">
+                        <Label className="text-xs font-semibold text-gray-700 block mb-2">
                           Trả phòng
-                        </label>
+                        </Label>
                         <Popover open={open2} onOpenChange={setOpen2}>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               id="date"
-                              className="w-full justify-between font-normal border-none shadow-none pl-2!"
+                              className="w-full justify-between font-normal border-none shadow-none bg-transparent hover:bg-transparent p-0 h-auto text-gray-900"
                             >
-                              {field.value
-                                ? format(field.value, "dd/MM/yyyy")
-                                : "dd/MM/yyyy"}
-
-                              <CalendarDays />
+                              <span
+                                className={field.value ? "" : "text-gray-400"}
+                              >
+                                {field.value
+                                  ? format(field.value, "dd/MM/yyyy")
+                                  : "Chọn ngày"}
+                              </span>
+                              <CalendarDays className="h-5 w-5 text-gray-500" />
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent
@@ -228,49 +245,55 @@ export default function BookingForm() {
                         </Popover>
                       </div>
                       {errors.ngayDi && (
-                        <p className="mt-1 text-sm text-red-500">
+                        <p className="text-xs text-red-500 mt-1">
                           {errors.ngayDi.message}
                         </p>
                       )}
-                    </>
+                    </div>
                   )}
                 />
               </div>
-              <div className="border-2 border-gray-200 rounded-xl p-3 hover:border-purple-300 transition-colors">
-                <Label className="text-xs font-semibold text-gray-600 block mb-1">
-                  Số khách
-                </Label>
-                <Controller
-                  name="soLuongKhach"
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <Select
-                        value={field.value ? String(field.value) : ""}
-                        onValueChange={(value) => field.onChange(Number(value))}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="1">1 Khách</SelectItem>
-                            <SelectItem value="2">2 Khách</SelectItem>
-                            <SelectItem value="3">3 Khách</SelectItem>
-                            <SelectItem value="4">4 Khách</SelectItem>
-                            <SelectItem value="5">5 Khách</SelectItem>
-                            <SelectItem value="6">6 Khách</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      {errors.soLuongKhach && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {errors.soLuongKhach.message}
-                        </p>
-                      )}
-                    </>
-                  )}
-                />
+
+              {/* Guest Count Field */}
+              <div className="space-y-1.5">
+                <div className="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-400 transition-colors bg-gray-50/50">
+                  <Label className="text-xs font-semibold text-gray-700 block mb-2">
+                    Số khách
+                  </Label>
+                  <Controller
+                    name="soLuongKhach"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <Select
+                          value={field.value ? String(field.value) : ""}
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                        >
+                          <SelectTrigger className="w-full border-none shadow-none bg-transparent p-0 h-auto">
+                            <SelectValue placeholder="Chọn số khách" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="1">1 Khách</SelectItem>
+                              <SelectItem value="2">2 Khách</SelectItem>
+                              <SelectItem value="3">3 Khách</SelectItem>
+                              <SelectItem value="4">4 Khách</SelectItem>
+                              <SelectItem value="5">5 Khách</SelectItem>
+                              <SelectItem value="6">6 Khách</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </>
+                    )}
+                  />
+                </div>
+                {errors.soLuongKhach && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.soLuongKhach.message}
+                  </p>
+                )}
               </div>
             </div>
 
