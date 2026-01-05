@@ -114,7 +114,6 @@ export default function BookingForm() {
     //   ngayDi: format(data.ngayDi, "yyyy-MM-dd"),
     // };
     handleBooking(data);
-    console.log(data);
   };
 
   return (

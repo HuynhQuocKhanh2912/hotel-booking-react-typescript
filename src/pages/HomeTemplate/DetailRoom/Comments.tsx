@@ -9,6 +9,16 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useForm } from "react-hook-form";
+import { format } from "date-fns";
+
+interface InputComments {
+  maPhong: 0;
+  maNguoiBinhLuan: 0;
+  ngayBinhLuan: string;
+  noiDung: string;
+  saoBinhLuan: 0;
+}
 
 const MovieReviewSection: FC = () => {
   const idRoom = useRoomDetail((state) => state.roomID);
@@ -71,6 +81,21 @@ const MovieReviewSection: FC = () => {
     if (diff < 604800) return `${Math.floor(diff / 86400)} ngày trước`;
 
     return date.toLocaleDateString("vi-VN");
+  };
+  // post comment form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<InputComments>();
+  const today = new Date();
+
+  const onSubmit = (data: InputComments) => {
+    const payload = {
+      ...data,
+      ngayBinhLuan: format(today, "dd-MMMM-yyyy"),
+    };
+    console.log(payload);
   };
 
   const renderStars = (rating: number) => {
@@ -158,32 +183,33 @@ const MovieReviewSection: FC = () => {
             </div>
 
             {/* Comment */}
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold text-gray-700">
-                Nhận xét của bạn <span className="text-red-500">*</span>
-              </Label>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-gray-700">
+                  Nhận xét của bạn <span className="text-red-500">*</span>
+                </Label>
+                <Textarea
+                  placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
+                  className="min-h-[120px] resize-none"
+                  {...register("noiDung")}
+                />
 
-              <Textarea
-                placeholder="Chia sẻ cảm nhận của bạn về sản phẩm này..."
-                className="min-h-[120px] resize-none"
-                maxLength={500}
-              />
-
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Mô tả chi tiết sẽ giúp người khác hơn</span>
-                <span>0/500</span>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Mô tả chi tiết sẽ giúp người khác hơn</span>
+                  <span>0/500</span>
+                </div>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
-              <Button variant="outline">Hủy</Button>
+              {/* Actions */}
+              <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
+                <Button variant="outline">Hủy</Button>
 
-              <Button className="gap-2">
-                <Send className="h-4 w-4" />
-                Gửi đánh giá
-              </Button>
-            </div>
+                <Button className="gap-2">
+                  <Send className="h-4 w-4" />
+                  Gửi đánh giá
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
 
