@@ -19,6 +19,7 @@ export default function Highlights() {
     },
     { icon: Shield, title: "An toàn & Bảo mật", desc: "Camera an ninh 24/7" },
   ];
+  
   return (
     <div className="bg-white rounded-3xl p-8 shadow-xl">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Điểm nổi bật</h2>
@@ -28,8 +29,8 @@ export default function Highlights() {
             key={idx}
             className="flex gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors"
           >
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-300 rounded-xl flex items-center justify-center">
+            <div className="shrink-0">
+              <div className="w-12 h-12 bg-linear-to-r from-blue-400 to-cyan-300 rounded-xl flex items-center justify-center">
                 <highlight.icon className="w-6 h-6 text-white" />
               </div>
             </div>
