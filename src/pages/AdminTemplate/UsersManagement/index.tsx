@@ -108,9 +108,12 @@ const UsersManagement = () => {
   };
 
   const handleUserEdit = (user: UserItem) => {
-    setMode("edit");
-    setIsModal();
     setDetailUser(user);
+    setMode("edit");
+    // modal is open when switching from detail to edit
+    if (!isModal) {
+      setIsModal();
+    }
   };
 
   const handleUserImg = () => {
@@ -551,6 +554,7 @@ const UsersManagement = () => {
           <UserDetailPopup
             detailUser={detailUser}
             onDelete={handleUserDelete}
+            onEdit={handleUserEdit}
           />
         )}
         {mode === "img" && <UserPopupImage />}
