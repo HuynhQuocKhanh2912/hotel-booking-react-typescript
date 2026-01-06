@@ -90,8 +90,15 @@ const MovieReviewSection: FC = () => {
   const [countComments, setCountComments] = useState(5);
   const visibleComments = useMemo(() => {
     if (!listComments) return [];
-    return listComments.slice(0, countComments);
+    const sortedComments = [...listComments].sort((a, b) => {
+      return (
+        new Date(b.ngayBinhLuan).getTime() - new Date(a.ngayBinhLuan).getTime()
+      );
+    });
+    return sortedComments.slice(0, countComments);
   }, [listComments, countComments]);
+
+  // display 5 list comments
   const hasMore = listComments ? countComments < listComments.length : false;
   const handleLoadMore = () => {
     setCountComments((prev) => prev + 5);
@@ -115,7 +122,7 @@ const MovieReviewSection: FC = () => {
       maNguoiBinhLuan: user?.user.id,
       saoBinhLuan: 1,
     };
-    // handlePostComments(payload);
+    handlePostComments(payload);
     console.log(payload);
   };
 
