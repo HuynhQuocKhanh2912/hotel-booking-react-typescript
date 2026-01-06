@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { FC } from "react";
 import { Star, ThumbsUp, MoreVertical, Send } from "lucide-react";
-import { getCommentsList } from "@/services/comments.api";
-import { useQuery } from "@tanstack/react-query";
+import { addComments, getCommentsList } from "@/services/comments.api";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
 import type { CommentsID } from "@/interfaces/commentsID.interface";
 import { Button } from "@/components/ui/button";
@@ -10,18 +10,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
-import { format } from "date-fns";
+import { formatISO } from "date-fns";
+import { useAuthStore } from "@/stores/auth.store";
+import type { CommentsList } from "@/interfaces/comment.interface";
 
-interface InputComments {
-  maPhong: 0;
-  maNguoiBinhLuan: 0;
-  ngayBinhLuan: string;
-  noiDung: string;
-  saoBinhLuan: 0;
-}
+// interface InputComments {
+//   maPhong: number;
+//   maNguoiBinhLuan: number;
+//   ngayBinhLuan: string;
+//   noiDung: string;
+//   saoBinhLuan: number;
+// }
 
 const MovieReviewSection: FC = () => {
   const idRoom = useRoomDetail((state) => state.roomID);
+  const { user } = useAuthStore();
+
   const [expandedComments, setExpandedComments] = useState<Set<number>>(
     new Set()
   );
@@ -31,7 +35,7 @@ const MovieReviewSection: FC = () => {
 
   const { data: listComments, isPending } = useQuery<CommentsID[] | undefined>({
     queryKey: ["commentsList", idRoom?.id],
-    queryFn: () => getCommentsList(Number(idRoom?.id)),
+    queryFn: async () => getCommentsList(Number(idRoom?.id)),
     enabled: !!idRoom?.id,
   });
 
@@ -82,19 +86,36 @@ const MovieReviewSection: FC = () => {
 
     return date.toLocaleDateString("vi-VN");
   };
+  // State quản lý số comment hiển thị
+  const [countComments, setCountComments] = useState(5);
+  const visibleComments = useMemo(() => {
+    if (!listComments) return [];
+    return listComments.slice(0, countComments);
+  }, [listComments, countComments]);
+  const hasMore = listComments ? countComments < listComments.length : false;
+  const handleLoadMore = () => {
+    setCountComments((prev) => prev + 5);
+  };
   // post comment form
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<InputComments>();
-  const today = new Date();
+  } = useForm<CommentsList>();
 
-  const onSubmit = (data: InputComments) => {
+  const { mutate: handlePostComments } = useMutation({
+    mutationFn: (data: CommentsList) => addComments(data),
+  });
+
+  const onSubmit = (data: CommentsList) => {
     const payload = {
       ...data,
-      ngayBinhLuan: format(today, "dd-MMMM-yyyy"),
+      ngayBinhLuan: formatISO(new Date()),
+      maPhong: idRoom?.id,
+      maNguoiBinhLuan: user?.user.id,
+      saoBinhLuan: 1,
     };
+    // handlePostComments(payload);
     console.log(payload);
   };
 
@@ -224,7 +245,7 @@ const MovieReviewSection: FC = () => {
               <p>Chưa có bình luận nào</p>
             </div>
           ) : (
-            listComments?.map((comment) => (
+            visibleComments?.map((comment) => (
               <div
                 key={comment.id}
                 className="bg-white border border-gray-200 rounded-lg p-5 hover:bg-gray-50 transition-all duration-300 hover:border-blue-300 shadow-sm hover:shadow-md"
@@ -305,6 +326,14 @@ const MovieReviewSection: FC = () => {
             ))
           )}
         </div>
+        {hasMore && (
+          <button
+            onClick={handleLoadMore}
+            className="mx-auto table cursor-pointer mt-5 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Xem thêm
+          </button>
+        )}
       </div>
     </div>
   );
