@@ -15,18 +15,24 @@ import {
   WashingMachine,
   Waves,
   X,
+  Sofa,
+  Heater,
 } from "lucide-react";
+import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRoomListQuery, useUsersListAllQuery } from "@/hooks/useRoomQuery";
 import type { RoomItems } from "@/interfaces/room.interface";
+import RoomDetailPopup from "./RoomDetailPopup";
+import { useRoomAdminStore } from "@/stores/roomManagement.store";
 
 const RoomsManagement = () => {
   // Store
-  // const { isModal, setIsModal, setIdRoom } = useRoomAdminStore();
+  const { isModal, setIsModal } = useRoomAdminStore();
 
   // State
   const itemRoomNumber: number = 9;
+  const [mode, setMode] = useState<"add" | "edit" | "detail" | "img" | null>(null);
   const [viewMode, setViewMode] = useState("grid");
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailRoom, setDetailRoom] = useState<RoomItems | null>(null);
@@ -42,7 +48,6 @@ const RoomsManagement = () => {
     itemRoomNumber,
     keyDebounce
   );
-  console.log(dataRoomListAll);
 
   useEffect(() => {
     const list = dataRoomList?.data ?? [];
@@ -78,6 +83,10 @@ const RoomsManagement = () => {
       amenities.push({ icon: <Car className="w-4 h-4" />, name: "Đỗ xe" });
     if (room.hoBoi)
       amenities.push({ icon: <Waves className="w-4 h-4" />, name: "Hồ bơi" });
+    if (room.banLa)
+      amenities.push({ icon: <Sofa className="w-4 h-4" />, name: "Sofa" });
+    if (room.banUi)
+      amenities.push({ icon: <Heater className="w-4 h-4" />, name: "Bàn ủi" });
     return amenities;
   };
 
@@ -109,9 +118,16 @@ const RoomsManagement = () => {
     totalBedrooms: dataRoomListAll?.reduce((sum, r) => sum + r.phongNgu, 0) || 0,
   };
 
-  const showRoomDetail = (room : RoomItems) => {
+  // const showRoomDetail = (room : RoomItems) => {
+  //   setDetailRoom(room);
+  //   setShowDetailModal(true);
+  // };
+
+  const handleRoomDetail = (room: RoomItems) => {
     setDetailRoom(room);
-    setShowDetailModal(true);
+    // setShowDetailModal(true);
+    setIsModal();
+    setMode("detail");
   };
 
   return (
@@ -216,7 +232,7 @@ const RoomsManagement = () => {
             >
               <div
                 className="relative h-52 overflow-hidden cursor-pointer"
-                onClick={() => showRoomDetail(room)}
+                // onClick={() => showRoomDetail(room)}
               >
                 <img
                   src={room.hinhAnh}
@@ -240,7 +256,7 @@ const RoomsManagement = () => {
                     <Users className="w-4 h-4" />
                     <span>{room.khach}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+               <div className="flex items-center gap-1">
                     <span>🛏️</span>
                     <span>{room.phongNgu}</span>
                   </div>
@@ -275,7 +291,7 @@ const RoomsManagement = () => {
 
                 <div className="flex items-center justify-between pt-3 border-t border-slate-200">
                   <button
-                    onClick={() => showRoomDetail(room)}
+                    onClick={() => handleRoomDetail(room)}
                     className="text-sm text-blue-600 hover:underline"
                   >
                     Chi tiết
@@ -473,6 +489,21 @@ const RoomsManagement = () => {
           </div>
         </div>
       )}
+
+      {/* Dialog */}
+      <Dialog open={isModal} onOpenChange={() => setIsModal()}>
+        {mode === "detail" && (
+          <RoomDetailPopup
+            detailRoom={detailRoom}
+            getAmenities={getAmenities}
+            // onDelete={handleUserDelete}
+            // onEdit={handleUserEdit}
+          />
+        )}
+        {/* {mode === "img" && <UserPopupImage />} */}
+        {/* {mode === "add" && <UserPopup mode="add" />} */}
+        {/* {mode === "edit" && <UserPopup mode="edit" detailUser={detailUser} />} */}
+      </Dialog>
     </>
   );
 };
