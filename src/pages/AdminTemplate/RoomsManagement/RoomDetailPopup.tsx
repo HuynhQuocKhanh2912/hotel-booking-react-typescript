@@ -5,7 +5,7 @@ import {
   Users,
 } from "lucide-react";
 
-type detailRoom = {
+type RoomDetailPopupProp = {
   detailRoom: RoomItems | null;
   getAmenities: (room: RoomItems) => { icon: React.ReactNode; name: string }[];
   // onDelete: (id:number) => void;
@@ -17,7 +17,7 @@ export default function RoomDetailPopup({
   getAmenities,
   // onDelete,
   // onEdit,
-}: detailRoom) {
+}: RoomDetailPopupProp) {
   console.log(detailRoom);
 
   return (

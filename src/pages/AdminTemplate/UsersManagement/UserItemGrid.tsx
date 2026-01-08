@@ -30,7 +30,7 @@ export default function UserItemGrid({
       key={user.id}
       className="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-lg transition-all overflow-hidden"
     >
-      <div className="relative h-32 bg-gradient-to-r from-purple-500 to-indigo-600">
+      <div className="relative h-32 bg-linear-to-r from-purple-500 to-indigo-600">
         <div
           className="absolute -bottom-12 left-6 w-24 h-24 rounded-full overflow-hidden cursor-pointer"
           onClick={() => handleUserImg()}
@@ -46,7 +46,7 @@ export default function UserItemGrid({
             />
           ) : (
             <div
-              className={`w-full h-full bg-gradient-to-r ${getGenderBg(user.gender)} flex items-center justify-center font-medium text-3xl text-white uppercase`}
+              className={`w-full h-full bg-linear-to-r ${getGenderBg(user.gender)} flex items-center justify-center font-medium text-3xl text-white uppercase`}
             >
               {user.name.split("", 1)}
             </div>

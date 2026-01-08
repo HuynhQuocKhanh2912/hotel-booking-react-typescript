@@ -27,6 +27,6 @@ export const getGenderIcon = (gender: boolean) =>
 
 export const getGenderBg = (gender: boolean) => {
   return gender
-    ? "from-blue-600 to-indigo-600"
-    : "bg-gradient-to-r from-pink-400 to-purple-500";
+    ? "bg-linear-to-r from-blue-600 to-indigo-600"
+    : "bg-linear-to-r from-pink-400 to-purple-500";
 };

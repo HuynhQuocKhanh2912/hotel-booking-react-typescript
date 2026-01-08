@@ -1,8 +1,8 @@
 import type { BaseApiResponse } from "@/interfaces/base.interface";
-import api from "./api";
-import type { Location, PagiLocation } from "@/interfaces/location.interface";
+import api, { apiCountry, apiProvince } from "./api";
+import type { BaseCountry, Location, PagiLocation, ProvinceItem } from "@/interfaces/location.interface";
 
-export const getLocation = async (): Promise<Location[] | undefined> => {
+export const getLocation = async (): Promise<Location[]> => {
   try {
     const response = await api.get<BaseApiResponse<Location[]>>("vi-tri");
     return response.data.content;
@@ -28,3 +28,26 @@ export const getLocationListApi = async (
     throw error;
   }
 };
+
+
+// apiProvince
+export const getProvinceApi = async (depth?: 'lv2'): Promise<ProvinceItem[]> => {
+  try {
+    // const dt = depth ? "?depth=2" : "p/";
+    const dt = depth ? "?depth=2" : "";
+    const response = await apiProvince.get<ProvinceItem[]>(dt);
+    return response.data
+  } catch (error) {
+    console.log("🌲 ~ getProvinceApi ~ error:", error)
+    throw error
+  }
+}
+// export const getCountryApi = async (): Promise<BaseCountry[]> => {
+//   try {
+//     const response = await apiCountry.get<BaseCountry[]>('countries');
+//     return response.data
+//   } catch (error) {
+//     console.log("🌲 ~ getCountryApi ~ error:", error)
+//     throw error
+//   }
+// }

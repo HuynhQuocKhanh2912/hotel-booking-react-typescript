@@ -38,7 +38,7 @@ export default function UserItemTable({
               />
             ) : (
               <div
-                className={`w-full h-full bg-gradient-to-r ${getGenderBg(user.gender)} flex items-center justify-center font-medium text-lg text-white uppercase`}
+                className={`w-full h-full bg-linear-to-r ${getGenderBg(user.gender)} flex items-center justify-center font-medium text-lg text-white uppercase`}
               >
                 {user.name.split("", 1)}
               </div>
