@@ -1,5 +1,5 @@
 import type { Location, PagiLocation } from "@/interfaces/location.interface";
-import { getCountryApi, getLocation, getLocationListApi, getProvinceApi } from "@/services/location.api";
+import { getLocation, getLocationListApi, getProvinceApi } from "@/services/location.api";
 import {
   useQuery,
   type UseQueryOptions,
@@ -39,10 +39,3 @@ export const useProvinceQuery = () =>
     queryKey: ["province-list"],
     queryFn: () => getProvinceApi(),
   });
-
-
-// export const useCountryQuery = () =>
-//   useQuery({
-//     queryKey: ["Country-list"],
-//     queryFn: () => getCountryApi(),
-//   });

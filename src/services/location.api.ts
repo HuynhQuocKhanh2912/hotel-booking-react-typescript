@@ -1,6 +1,6 @@
 import type { BaseApiResponse } from "@/interfaces/base.interface";
-import api, { apiCountry, apiProvince } from "./api";
-import type { BaseCountry, Location, PagiLocation, ProvinceItem } from "@/interfaces/location.interface";
+import api, { apiProvince } from "./api";
+import type { Location, PagiLocation, ProvinceItem } from "@/interfaces/location.interface";
 
 export const getLocation = async (): Promise<Location[]> => {
   try {
