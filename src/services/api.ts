@@ -21,4 +21,14 @@ api.interceptors.request.use((config: any) => {
   };
 });
 
+export const apiProvince = axios.create({
+  baseURL: import.meta.env.VITE_URL_API_PROVINCE,
+  timeout: 30000,
+});
+
+// export const apiCountry = axios.create({
+//   baseURL: import.meta.env.VITE_URL_API_COUNTRY,
+//   timeout: 30000,
+// });
+
 export default api;

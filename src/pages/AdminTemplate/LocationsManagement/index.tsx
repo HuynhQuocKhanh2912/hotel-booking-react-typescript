@@ -1,40 +1,44 @@
 import { useEffect, useState } from "react";
-import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  MapPin,
-  Globe,
-  Map,
-  X,
-} from "lucide-react";
+import { Search, Plus, MapPin, Globe, Map } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useLocationListAllQuery, useLocationListQuery } from "@/hooks/useLocation";
+import {
+  useLocationListAllQuery,
+  useLocationListQuery,
+} from "@/hooks/useLocation";
 import type { Location } from "@/interfaces/location.interface";
+import LocationItemGrid from "./LocationItemGrid";
+import LocationItemTable from "./LocationItemTable";
+import { Dialog } from "@radix-ui/react-dialog";
+import LocationDetailPopup from "./LocationDetailPopup";
+import { useLocationAdminStore } from "@/stores/locationManagement.store";
+import { PaginationAdmin } from "../_Component/PaginationAdmin";
+import LocationPopup from "./LocationPopup";
 
 export default function LocationsManagement() {
+  // Store
+  const { isModal, setIsModal, setIdLocation } = useLocationAdminStore();
+
   // State
-  const itemLocationPagi: number = 8;
+  const itemLocationPagi: number = 12;
   const [pagiCurrent, setPagiCurrent] = useState(1);
   const [listLocation, setListLocation] = useState<Location[] | null>(null);
-
+  const [mode, setMode] = useState<"add" | "edit" | "detail" | "img" | null>(
+    null
+  );
 
   const [viewMode, setViewMode] = useState("grid");
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [detailLocation, setDetailLocation] = useState(null);
-
-  const showLocationDetail = (location) => {
-    setDetailLocation(location);
-    setShowDetailModal(true);
-  };
+  // const [showDetailModal, setShowDetailModal] = useState(false);
+  const [detailLocation, setDetailLocation] = useState<Location | null>(null);
 
   // API
   const keyDebounce = "";
   const { data: dataLocationListAll } = useLocationListAllQuery();
-  const { data: dataLocationList } = useLocationListQuery(pagiCurrent, itemLocationPagi, keyDebounce);
-
+  const { data: dataLocationList } = useLocationListQuery(
+    pagiCurrent,
+    itemLocationPagi,
+    keyDebounce
+  );
 
   useEffect(() => {
     const list = dataLocationList?.data ?? [];
@@ -47,6 +51,18 @@ export default function LocationsManagement() {
     setListLocation(list);
   }, [dataLocationList, pagiCurrent]);
 
+  // Handle
+  const handleLocationDetail = (location: Location) => {
+    setDetailLocation(location);
+    setIsModal();
+    setMode("detail");
+    setIdLocation(location.id);
+  };
+
+  const handleLocationAdd = () => {
+    setMode("add");
+    setIsModal();
+  };
 
   // Stats
   const stats = {
@@ -54,6 +70,17 @@ export default function LocationsManagement() {
     cities: new Set(dataLocationListAll?.map((l) => l.tinhThanh)).size,
     countries: new Set(dataLocationListAll?.map((l) => l.quocGia)).size,
     withImages: dataLocationListAll?.filter((l) => l.hinhAnh).length,
+  };
+
+  // Pagination
+  const infoPagi = {
+    pageIndex: dataLocationList?.pageIndex || 0,
+    pageSize: dataLocationList?.pageSize || 0,
+    totalRow: dataLocationList?.totalRow || 0,
+  };
+
+  const handlePagi = (data: number) => {
+    setPagiCurrent(data);
   };
 
   return (
@@ -125,7 +152,10 @@ export default function LocationsManagement() {
                 List
               </button>
             </div>
-            <Button className="flex items-center gap-2 h-11 bg-blue-600 hover:bg-blue-700 shadow-sm">
+            <Button
+              onClick={() => handleLocationAdd()}
+              className="flex items-center gap-2 h-11 bg-blue-600 hover:bg-blue-700 shadow-sm"
+            >
               <Plus className="w-4 h-4" />
               Thêm vị trí
             </Button>
@@ -137,54 +167,11 @@ export default function LocationsManagement() {
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in-up">
           {listLocation?.map((location) => (
-            <div
+            <LocationItemGrid
               key={location.id}
-              className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200 hover:shadow-lg transition-all group"
-            >
-              <div
-                className="relative h-56 overflow-hidden cursor-pointer"
-                onClick={() => showLocationDetail(location)}
-              >
-                <img
-                  src={location.hinhAnh}
-                  alt={location.tenViTri}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-sm font-medium">
-                      {location.tinhThanh}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold">{location.tenViTri}</h3>
-                </div>
-              </div>
-              <div className="p-5">
-                <div className="flex items-center gap-2 mb-4 text-slate-600">
-                  <Globe className="w-4 h-4" />
-                  <span className="text-sm">{location.quocGia}</span>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-                  <button
-                    onClick={() => showLocationDetail(location)}
-                    className="text-sm text-emerald-600 hover:underline font-medium"
-                  >
-                    Chi tiết
-                  </button>
-                  <div className="flex gap-2">
-                    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+              location={location}
+              handleLocationDetail={handleLocationDetail}
+            />
           ))}
         </div>
       ) : (
@@ -212,50 +199,11 @@ export default function LocationsManagement() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {listLocation?.map((location) => (
-                  <tr
+                  <LocationItemTable
                     key={location.id}
-                    className="hover:bg-slate-50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                          <MapPin className="w-6 h-6 text-emerald-600" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-slate-900">
-                            {location.tenViTri}
-                          </div>
-                          <div className="text-sm text-slate-500">
-                            ID: {location.id}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-slate-900">
-                      {location.tinhThanh}
-                    </td>
-                    <td className="px-6 py-4 text-slate-900">
-                      {location.quocGia}
-                    </td>
-                    <td className="px-6 py-4">
-                      <img
-                        src={location.hinhAnh}
-                        alt={location.tenViTri}
-                        className="w-20 h-14 rounded-lg object-cover cursor-pointer hover:scale-105 transition-transform"
-                        onClick={() => showLocationDetail(location)}
-                      />
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                    location={location}
+                    handleLocationDetail={handleLocationDetail}
+                  />
                 ))}
               </tbody>
             </table>
@@ -263,91 +211,28 @@ export default function LocationsManagement() {
         </div>
       )}
 
-      {/* {showDetailModal && detailLocation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-800">
-                Chi tiết vị trí
-              </h2>
-              <button
-                onClick={() => setShowDetailModal(false)}
-                className="p-2 hover:bg-slate-100 rounded-lg"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6">
-              <div className="relative h-80 rounded-xl overflow-hidden mb-6">
-                <img
-                  src={detailLocation.hinhAnh}
-                  alt={detailLocation.tenViTri}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-3xl font-bold mb-2">
-                    {detailLocation.tenViTri}
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Map className="w-5 h-5" />
-                      <span>{detailLocation.tinhThanh}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-5 h-5" />
-                      <span>{detailLocation.quocGia}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="p-4 bg-emerald-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-6 h-6 text-emerald-600" />
-                    <div>
-                      <div className="text-xs text-slate-600">Vị trí</div>
-                      <div className="font-semibold text-slate-800">
-                        {detailLocation.tenViTri}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 bg-teal-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Map className="w-6 h-6 text-teal-600" />
-                    <div>
-                      <div className="text-xs text-slate-600">Tỉnh thành</div>
-                      <div className="font-semibold text-slate-800">
-                        {detailLocation.tinhThanh}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 bg-cyan-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-6 h-6 text-cyan-600" />
-                    <div>
-                      <div className="text-xs text-slate-600">Quốc gia</div>
-                      <div className="font-semibold text-slate-800">
-                        {detailLocation.quocGia}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-slate-50 rounded-lg p-4">
-                <div className="text-sm text-slate-600 mb-1">ID vị trí</div>
-                <div className="text-lg font-bold text-slate-800">
-                  #{detailLocation.id}
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Pagination */}
+      {infoPagi.totalRow > itemLocationPagi && (
+        <div className="w-full mt-6">
+          <PaginationAdmin infoPagi={infoPagi} handlePagi={handlePagi} />
         </div>
-      )} */}
+      )}
+
+      {/* Dialog */}
+      <Dialog open={isModal} onOpenChange={() => setIsModal()}>
+        {mode === "detail" && (
+          <LocationDetailPopup
+            detailLocation={detailLocation}
+            // handleLocationDetail={handleLocationDetail}
+            // getAmenities={getAmenities}
+            // onDelete={handleUserDelete}
+            // onEdit={handleUserEdit}
+          />
+        )}
+        {/* {mode === "img" && <UserPopupImage />} */}
+        {mode === "add" && <LocationPopup mode="add" />}
+        {/* {mode === "edit" && <UserPopup mode="edit" detailUser={detailUser} />} */}
+      </Dialog>
     </>
   );
 }

@@ -44,7 +44,7 @@ type Actions = {
 };
 
 const UsersManagement = () => {
-  const itemUserNumber: number = 9;
+  const itemUserPagi: number = 9;
   // Store
   const { isModal, setIsModal, setIdUser } = useUserAdminStore();
 
@@ -73,7 +73,7 @@ const UsersManagement = () => {
   const { data: dataUserListAll } = useUsersListAllQuery();
   const { data: dataUserList, isLoading: isLoadingList } = useUsersListQuery(
     pagiCurrent,
-    itemUserNumber,
+    itemUserPagi,
     keyDebounce
   );
   const { mutate: mutateUserDelete } = useUsersDeleteQuery();
@@ -241,7 +241,7 @@ const UsersManagement = () => {
                 render={({ field }) => {
                   return (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="pl-10 !h-11 w-full">
+                      <SelectTrigger className="pl-10 h-11! w-full">
                         <SelectValue placeholder="Tất cả vai trò" />
                       </SelectTrigger>
                       <SelectContent>
@@ -355,7 +355,7 @@ const UsersManagement = () => {
       )}
 
       {/* Pagination */}
-      {infoPagi.totalRow > itemUserNumber && (
+      {infoPagi.totalRow > itemUserPagi && (
         <div className="w-full mt-6">
           <PaginationAdmin infoPagi={infoPagi} handlePagi={handlePagi} />
         </div>
