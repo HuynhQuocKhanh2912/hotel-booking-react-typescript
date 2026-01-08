@@ -3,19 +3,12 @@ import { useForm, Controller } from "react-hook-form";
 import {
   Search,
   Plus,
-  Edit,
-  Trash2,
   User,
-  Mail,
-  Phone,
-  Calendar,
   Users,
-  Eye,
   Crown,
   Filter,
   Mars,
   Venus,
-  ImagePlus,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,7 +25,6 @@ import {
   useUsersListQuery,
 } from "@/hooks/useUserQuery";
 import type { UserItem } from "@/interfaces/user.interface";
-import { formatDateSafe } from "@/hooks/useFormatDateSafe";
 import { PaginationAdmin } from "../_Component/PaginationAdmin";
 import Loading from "../_Component/Loading";
 import { Dialog } from "@/components/ui/dialog";
@@ -42,6 +34,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useUserAdminStore } from "@/stores/userManagement.store";
 import { showComfirmSwal } from "@/utils/swal";
 import UserPopupImage from "./UserPopupImage";
+import UserItemGrid from "./UserItemGrid";
+import UserItemTable from "./UserItemTable";
 
 //Type Filters and Actions
 type Actions = {
@@ -129,47 +123,13 @@ const UsersManagement = () => {
     }
     setTimeout(() => {
       showComfirmSwal({
-        title: "Bạn có chắc chắn xoá không",
+        text: "Bạn có chắc chắn muốn xóa người dùng này không?",
         onConfirm: () => mutateUserDelete(id),
       });
     }, 100);
   };
 
-  // Style css && text && icon
-  const getRoleBadge = (role: string) => {
-    return role === "ADMIN"
-      ? {
-          bg: "bg-purple-100",
-          color: "text-purple-800",
-          icon: <Crown className="w-3 h-3" />,
-          text: "Quản trị",
-        }
-      : {
-          bg: "bg-blue-100",
-          color: "text-blue-800",
-          icon: <User className="w-3 h-3" />,
-          text: "Người dùng",
-        };
-  };
-
-  const getGenderLabel = (gender: boolean) => {
-    return gender ? "Nam" : "Nữ";
-  };
-
-  const getGenderIcon = (gender: boolean) => {
-    return gender ? (
-      <Mars className="text-blue-600" />
-    ) : (
-      <Venus className="text-pink-600" />
-    );
-  };
-
-  const getGenderBg = (gender: boolean) => {
-    return gender
-      ? "from-blue-600 to-indigo-600"
-      : "bg-gradient-to-r from-pink-400 to-purple-500";
-  };
-
+  // Stats
   const stats = {
     total: dataUserListAll?.length || 0,
     admin: dataUserListAll?.filter((user) => user.role === "ADMIN").length || 0,
@@ -327,99 +287,15 @@ const UsersManagement = () => {
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
           {listUsers?.map((user) => {
-            const roleBadge = getRoleBadge(user.role);
             return (
-              <div
+              <UserItemGrid
                 key={user.id}
-                className="bg-white rounded-xl shadow-sm border border-slate-200 hover:shadow-lg transition-all overflow-hidden"
-              >
-                <div className="relative h-32 bg-gradient-to-r from-purple-500 to-indigo-600">
-                  <div
-                    className="absolute -bottom-12 left-6 w-24 h-24 rounded-full overflow-hidden cursor-pointer"
-                    onClick={() => handleUserImg()}
-                  >
-                    <div className="absolute inset-0 flex items-center justify-center text-white rounded-full bg-black/60 transition-all duration-300 z-2 opacity-0 hover:opacity-100">
-                      <ImagePlus />
-                    </div>
-                    {user.avatar ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="w-full h-full rounded-full border-4 border-white shadow-lg"
-                      />
-                    ) : (
-                      <div
-                        className={`w-full h-full bg-gradient-to-r ${getGenderBg(user.gender)} flex items-center justify-center font-medium text-3xl text-white uppercase`}
-                      >
-                        {user.name.split("", 1)}
-                      </div>
-                    )}
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${roleBadge.bg} ${roleBadge.color}`}
-                    >
-                      {roleBadge.icon}
-                      {roleBadge.text}
-                    </span>
-                  </div>
-                </div>
-                <div className="pt-14 px-6 pb-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-bold text-slate-800 line-clamp-1">
-                      {user.name}
-                    </h3>
-                    <span className="text-lg">
-                      {getGenderIcon(user.gender)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-500 mb-4">
-                    <span>ID: {user.id}</span>
-                    <span>•</span>
-                    <span>{getGenderLabel(user.gender)}</span>
-                  </div>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span className="truncate">{user.email}</span>
-                    </div>
-                    {user.phone && (
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>{user.phone}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span>{formatDateSafe(user.birthday)}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-                    <button
-                      onClick={() => handleUserDetail(user)}
-                      className="text-sm text-purple-600 hover:underline font-medium"
-                    >
-                      Chi tiết
-                    </button>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleUserEdit(user)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleUserDelete(user.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                user={user}
+                handleUserImg={handleUserImg}
+                handleUserDelete={handleUserDelete}
+                handleUserDetail={handleUserDetail}
+                handleUserEdit={handleUserEdit}
+              />
             );
           })}
         </div>
@@ -453,78 +329,15 @@ const UsersManagement = () => {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {listUsers?.map((user) => {
-                  const roleBadge = getRoleBadge(user.role);
-
                   return (
-                    <tr
+                    <UserItemTable
                       key={user.id}
-                      className="hover:bg-slate-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
-                            {user.avatar ? (
-                              <img
-                                src={user.avatar}
-                                alt={user.name}
-                                className="w-full h-full rounded-full"
-                              />
-                            ) : (
-                              <div
-                                className={`w-full h-full bg-gradient-to-r ${getGenderBg(user.gender)} flex items-center justify-center font-medium text-lg text-white uppercase`}
-                              >
-                                {user.name.split("", 1)}
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-medium text-slate-900 flex items-center gap-2 break-all">
-                              {user.name}
-                              <span>{getGenderIcon(user.gender)}</span>
-                            </div>
-                            <div className="text-sm text-slate-500">
-                              ID: {user.id}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-slate-900 break-all">
-                        {user.email}
-                      </td>
-                      <td className="px-6 py-4 text-slate-900">
-                        {user.phone || "-"}
-                      </td>
-                      <td className="px-6 py-4 text-slate-900">
-                        {formatDateSafe(user.birthday)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1 ${roleBadge.bg} ${roleBadge.color}`}
-                        >
-                          {roleBadge.icon}
-                          {roleBadge.text}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => handleUserDetail(user)}
-                            className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleUserDelete(user.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                      user={user}
+                      handleUserImg={handleUserImg}
+                      handleUserDetail={handleUserDetail}
+                      handleUserEdit={handleUserEdit}
+                      handleUserDelete={handleUserDelete}
+                    />
                   );
                 })}
               </tbody>

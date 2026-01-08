@@ -23,7 +23,7 @@ export const showSwal = (optional?: optionalProp) => {
 
 export const showComfirmSwal = (optional: optionalProp) => {
   return Swal.fire({
-    title: "Bạn có chắc chắn không",
+    title: optional.title || "Xác nhận xoá",
     text: optional.text || "",
     icon: optional.icon || "warning",
     showCancelButton: true,

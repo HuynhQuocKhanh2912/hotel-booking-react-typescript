@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Search,
   Plus,
@@ -11,15 +11,52 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useLocationListAllQuery, useLocationListQuery } from "@/hooks/useLocation";
-import type { Location } from "@/interfaces/location.interface";
 
 export default function LocationsManagement() {
-  // State
-  const itemLocationPagi: number = 8;
-  const [pagiCurrent, setPagiCurrent] = useState(1);
-  const [listLocation, setListLocation] = useState<Location[] | null>(null);
-
+  const [locations, setLocations] = useState([
+    {
+      id: 1,
+      tenViTri: "Quận 1",
+      tinhThanh: "Hồ Chí Minh",
+      quocGia: "Việt Nam",
+      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/vt1.jpg",
+    },
+    {
+      id: 2,
+      tenViTri: "Cái Răng",
+      tinhThanh: "Cần Thơ",
+      quocGia: "Việt Nam",
+      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/vt2.jpg",
+    },
+    {
+      id: 3,
+      tenViTri: "Hòn Rùa",
+      tinhThanh: "Nha Trang",
+      quocGia: "Việt Nam",
+      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/vt3.jpg",
+    },
+    {
+      id: 4,
+      tenViTri: "Bãi Sau",
+      tinhThanh: "Vũng Tàu",
+      quocGia: "Việt Nam",
+      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/vt4.jpg",
+    },
+    {
+      id: 5,
+      tenViTri: "Hồ Hoàn Kiếm",
+      tinhThanh: "Hà Nội",
+      quocGia: "Việt Nam",
+      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/vt5.jpg",
+    },
+    {
+      id: 6,
+      tenViTri: "Phố Cổ",
+      tinhThanh: "Hội An",
+      quocGia: "Việt Nam",
+      hinhAnh: "https://airbnbnew.cybersoft.edu.vn/images/vt6.jpg",
+    },
+  ]);
 
   const [viewMode, setViewMode] = useState("grid");
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -30,30 +67,11 @@ export default function LocationsManagement() {
     setShowDetailModal(true);
   };
 
-  // API
-  const keyDebounce = "";
-  const { data: dataLocationListAll } = useLocationListAllQuery();
-  const { data: dataLocationList } = useLocationListQuery(pagiCurrent, itemLocationPagi, keyDebounce);
-
-
-  useEffect(() => {
-    const list = dataLocationList?.data ?? [];
-    // const result =
-    //   watchSelect === "ALL"
-    //     ? list
-    //     : list.filter(
-    //         (f) => f.role.toUpperCase() === watchSelect.toUpperCase()
-    //       );
-    setListLocation(list);
-  }, [dataLocationList, pagiCurrent]);
-
-
-  // Stats
   const stats = {
-    total: dataLocationListAll?.length,
-    cities: new Set(dataLocationListAll?.map((l) => l.tinhThanh)).size,
-    countries: new Set(dataLocationListAll?.map((l) => l.quocGia)).size,
-    withImages: dataLocationListAll?.filter((l) => l.hinhAnh).length,
+    total: locations.length,
+    cities: new Set(locations.map((l) => l.tinhThanh)).size,
+    countries: new Set(locations.map((l) => l.quocGia)).size,
+    withImages: locations.filter((l) => l.hinhAnh).length,
   };
 
   return (
@@ -136,7 +154,7 @@ export default function LocationsManagement() {
       {/* Locations Table && Grid */}
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in-up">
-          {listLocation?.map((location) => (
+          {locations.map((location) => (
             <div
               key={location.id}
               className="bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200 hover:shadow-lg transition-all group"
@@ -211,7 +229,7 @@ export default function LocationsManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {listLocation?.map((location) => (
+                {locations.map((location) => (
                   <tr
                     key={location.id}
                     className="hover:bg-slate-50 transition-colors"
@@ -263,7 +281,7 @@ export default function LocationsManagement() {
         </div>
       )}
 
-      {/* {showDetailModal && detailLocation && (
+      {showDetailModal && detailLocation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
@@ -347,7 +365,7 @@ export default function LocationsManagement() {
             </div>
           </div>
         </div>
-      )} */}
+      )}
     </>
   );
 }

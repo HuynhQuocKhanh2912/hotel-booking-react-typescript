@@ -20,12 +20,11 @@ export default function RoomDetailPopup({
 }: detailRoom) {
   console.log(detailRoom);
 
-
   return (
     <DialogContent className="sm:max-w-2xl p-0 border-0 rounded-none bg-transparent">
       <DialogTitle className="hidden">Popup Detail</DialogTitle>
-      <div className="w-full max-h-[96vh] overflow-y-auto">
-        <div className="bg-white rounded-xl shadow-xl">
+      <div className="w-full max-h-[96vh] overflow-y-auto no-overflow bg-white rounded-xl">
+        <div className="shadow-xl">
           <div className="p-6">
             <img
               src={detailRoom?.hinhAnh}
