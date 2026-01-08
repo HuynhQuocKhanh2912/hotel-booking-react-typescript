@@ -14,7 +14,6 @@ import {
   UtensilsCrossed,
   WashingMachine,
   Waves,
-  X,
   Sofa,
   Heater,
 } from "lucide-react";
@@ -25,16 +24,18 @@ import { useRoomListQuery, useUsersListAllQuery } from "@/hooks/useRoomQuery";
 import type { RoomItems } from "@/interfaces/room.interface";
 import RoomDetailPopup from "./RoomDetailPopup";
 import { useRoomAdminStore } from "@/stores/roomManagement.store";
+import RoomPopup from "./RoomPopup";
 
 const RoomsManagement = () => {
   // Store
   const { isModal, setIsModal } = useRoomAdminStore();
 
   // State
-  const itemRoomNumber: number = 9;
-  const [mode, setMode] = useState<"add" | "edit" | "detail" | "img" | null>(null);
+  const itemRoomPagi: number = 9;
+  const [mode, setMode] = useState<"add" | "edit" | "detail" | "img" | null>(
+    null
+  );
   const [viewMode, setViewMode] = useState("grid");
-  const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailRoom, setDetailRoom] = useState<RoomItems | null>(null);
   const [listRooms, setListRooms] = useState<RoomItems[] | null>(null);
   const [pagiCurrent, setPagiCurrent] = useState(1);
@@ -45,7 +46,7 @@ const RoomsManagement = () => {
   const { data: dataRoomListAll } = useUsersListAllQuery();
   const { data: dataRoomList } = useRoomListQuery(
     pagiCurrent,
-    itemRoomNumber,
+    itemRoomPagi,
     keyDebounce
   );
 
@@ -60,8 +61,19 @@ const RoomsManagement = () => {
     setListRooms(list);
   }, [dataRoomList, pagiCurrent]);
 
+  const handleRoomDetail = (room: RoomItems) => {
+    setDetailRoom(room);
+    setIsModal();
+    setMode("detail");
+  };
+
+  const handleRoomAdd = () => {
+    setMode("add");
+    setIsModal();
+  };
+
   // Handler Amenities
-  const getAmenities = (room) => {
+  const getAmenities = (room: RoomItems) => {
     const amenities = [];
     if (room.wifi)
       amenities.push({ icon: <Wifi className="w-4 h-4" />, name: "Wifi" });
@@ -90,7 +102,7 @@ const RoomsManagement = () => {
     return amenities;
   };
 
-  const countAmenities = (room) => {
+  const countAmenities = (room: RoomItems) => {
     return [
       room.wifi,
       room.tivi,
@@ -104,30 +116,21 @@ const RoomsManagement = () => {
     ].filter(Boolean).length;
   };
 
-
   const stats = {
     total: dataRoomListAll?.length || 0,
-    avgPrice: dataRoomListAll && dataRoomListAll.length > 0
-      ? Math.round(
-          dataRoomListAll.reduce((sum, r) => sum + r.giaTien, 0) / dataRoomListAll.length
-        )
-      : 0,
-    maxGuests: dataRoomListAll && dataRoomListAll.length > 0
-      ? Math.max(...dataRoomListAll.map((r) => r.khach))
-      : 0,
-    totalBedrooms: dataRoomListAll?.reduce((sum, r) => sum + r.phongNgu, 0) || 0,
-  };
-
-  // const showRoomDetail = (room : RoomItems) => {
-  //   setDetailRoom(room);
-  //   setShowDetailModal(true);
-  // };
-
-  const handleRoomDetail = (room: RoomItems) => {
-    setDetailRoom(room);
-    // setShowDetailModal(true);
-    setIsModal();
-    setMode("detail");
+    avgPrice:
+      dataRoomListAll && dataRoomListAll.length > 0
+        ? Math.round(
+            dataRoomListAll.reduce((sum, r) => sum + r.giaTien, 0) /
+              dataRoomListAll.length
+          )
+        : 0,
+    maxGuests:
+      dataRoomListAll && dataRoomListAll.length > 0
+        ? Math.max(...dataRoomListAll.map((r) => r.khach))
+        : 0,
+    totalBedrooms:
+      dataRoomListAll?.reduce((sum, r) => sum + r.phongNgu, 0) || 0,
   };
 
   return (
@@ -214,7 +217,10 @@ const RoomsManagement = () => {
                 List
               </button>
             </div>
-            <Button className="flex items-center gap-2 h-11 bg-blue-600 hover:bg-blue-700 shadow-sm">
+            <Button
+              className="flex items-center gap-2 h-11 bg-blue-600 hover:bg-blue-700 shadow-sm"
+              onClick={() => handleRoomAdd()}
+            >
               <Plus className="w-4 h-4" />
               Thêm phòng
             </Button>
@@ -256,7 +262,7 @@ const RoomsManagement = () => {
                     <Users className="w-4 h-4" />
                     <span>{room.khach}</span>
                   </div>
-               <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1">
                     <span>🛏️</span>
                     <span>{room.phongNgu}</span>
                   </div>
@@ -401,95 +407,6 @@ const RoomsManagement = () => {
         </div>
       )}
 
-      {showDetailModal && detailRoom && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-slate-200 p-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-800">
-                Chi tiết phòng
-              </h2>
-              <button
-                onClick={() => setShowDetailModal(false)}
-                className="p-2 hover:bg-slate-100 rounded-lg"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6">
-              <img
-                src={detailRoom.hinhAnh}
-                alt={detailRoom.tenPhong}
-                className="w-full h-64 object-cover rounded-xl mb-6"
-              />
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">
-                {detailRoom.tenPhong}
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <Users className="w-6 h-6 mx-auto mb-2 text-blue-600" />
-                  <div className="text-sm text-slate-600">Khách</div>
-                  <div className="text-xl font-bold">{detailRoom.khach}</div>
-                </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <span className="text-2xl mb-2 block">🛏️</span>
-                  <div className="text-sm text-slate-600">Phòng ngủ</div>
-                  <div className="text-xl font-bold">{detailRoom.phongNgu}</div>
-                </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <span className="text-2xl mb-2 block">🛏️</span>
-                  <div className="text-sm text-slate-600">Giường</div>
-                  <div className="text-xl font-bold">{detailRoom.giuong}</div>
-                </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <span className="text-2xl mb-2 block">🚿</span>
-                  <div className="text-sm text-slate-600">Phòng tắm</div>
-                  <div className="text-xl font-bold">{detailRoom.phongTam}</div>
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-lg font-bold text-slate-800 mb-3">Mô tả</h4>
-                <p className="text-slate-600 leading-relaxed">
-                  {detailRoom.moTa}
-                </p>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-lg font-bold text-slate-800 mb-3">
-                  Tiện nghi
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {getAmenities(detailRoom).map((amenity, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg"
-                    >
-                      {amenity.icon}
-                      <span className="text-sm text-slate-700">
-                        {amenity.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-6 border-t border-slate-200">
-                <div>
-                  <div className="text-sm text-slate-600">Giá phòng</div>
-                  <div className="text-3xl font-bold text-blue-600">
-                    ${detailRoom.giaTien}
-                    <span className="text-lg text-slate-600">/đêm</span>
-                  </div>
-                </div>
-                <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  Đặt phòng ngay
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Dialog */}
       <Dialog open={isModal} onOpenChange={() => setIsModal()}>
         {mode === "detail" && (
@@ -501,7 +418,7 @@ const RoomsManagement = () => {
           />
         )}
         {/* {mode === "img" && <UserPopupImage />} */}
-        {/* {mode === "add" && <UserPopup mode="add" />} */}
+        {mode === "add" && <RoomPopup mode="add" />}
         {/* {mode === "edit" && <UserPopup mode="edit" detailUser={detailUser} />} */}
       </Dialog>
     </>
