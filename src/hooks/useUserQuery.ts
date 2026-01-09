@@ -88,9 +88,7 @@ export const useUsersAddQuery = (
 };
 
 export const useUsersDeleteQuery = (
-  optional?: Partial<
-    Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">
-  >
+  optional?: Partial<Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">>
 ) => {
   const queryClient = useQueryClient();
 

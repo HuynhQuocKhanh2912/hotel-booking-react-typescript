@@ -4,11 +4,13 @@ import { Edit, Globe, MapPin, Trash2 } from "lucide-react";
 type LocationItemGridProps = {
   location: Location;
   handleLocationDetail: (location: Location) => void;
+  handleLocationDelete: (id: number) => void;
 };
 
 export default function LocationItemGrid({
   location,
   handleLocationDetail,
+  handleLocationDelete,
 }: LocationItemGridProps) {
   return (
     <div
@@ -50,7 +52,10 @@ export default function LocationItemGrid({
             <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
               <Edit className="w-4 h-4" />
             </button>
-            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+            <button
+              onClick={() => handleLocationDelete(location.id)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
               <Trash2 className="w-4 h-4" />
             </button>
           </div>

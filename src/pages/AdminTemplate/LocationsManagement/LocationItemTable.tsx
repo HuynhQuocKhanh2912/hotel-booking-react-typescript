@@ -4,11 +4,13 @@ import type { Location } from "@/interfaces/location.interface";
 type LocationItemTableProps = {
   location: Location;
   handleLocationDetail: (location: Location) => void;
+  handleLocationDelete: (id: number) => void;
 };
 
 export default function LocationItemTable({
   location,
   handleLocationDetail,
+  handleLocationDelete,
 }: LocationItemTableProps) {
   return (
     <tr key={location.id} className="hover:bg-slate-50 transition-colors">
@@ -40,7 +42,10 @@ export default function LocationItemTable({
           <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
             <Edit className="w-4 h-4" />
           </button>
-          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+          <button
+            onClick={() => handleLocationDelete(location.id)}
+            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+          >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
