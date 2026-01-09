@@ -3,6 +3,8 @@ import { Search, Plus, MapPin, Globe, Map } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  useLocationAddQuery,
+  useLocationDeleteQuery,
   useLocationListAllQuery,
   useLocationListQuery,
 } from "@/hooks/useLocation";
@@ -14,6 +16,7 @@ import LocationDetailPopup from "./LocationDetailPopup";
 import { useLocationAdminStore } from "@/stores/locationManagement.store";
 import { PaginationAdmin } from "../_Component/PaginationAdmin";
 import LocationPopup from "./LocationPopup";
+import { showComfirmSwal } from "@/utils/swal";
 
 export default function LocationsManagement() {
   // Store
@@ -39,6 +42,7 @@ export default function LocationsManagement() {
     itemLocationPagi,
     keyDebounce
   );
+  const { mutate: mutateDelete } = useLocationDeleteQuery();
 
   useEffect(() => {
     const list = dataLocationList?.data ?? [];
@@ -62,6 +66,18 @@ export default function LocationsManagement() {
   const handleLocationAdd = () => {
     setMode("add");
     setIsModal();
+  };
+
+  const handleLocationDelete = (id: number) => {
+    if (isModal) {
+      setMode(null);
+    }
+    setTimeout(() => {
+      showComfirmSwal({
+        text: "Bạn có chắc chắn muốn xóa vị trí này không?",
+        onConfirm: () => mutateDelete(id),
+      });
+    }, 100);
   };
 
   // Stats
@@ -171,6 +187,7 @@ export default function LocationsManagement() {
               key={location.id}
               location={location}
               handleLocationDetail={handleLocationDetail}
+              handleLocationDelete={handleLocationDelete}
             />
           ))}
         </div>
@@ -203,6 +220,7 @@ export default function LocationsManagement() {
                     key={location.id}
                     location={location}
                     handleLocationDetail={handleLocationDetail}
+                    handleLocationDelete={handleLocationDelete}
                   />
                 ))}
               </tbody>

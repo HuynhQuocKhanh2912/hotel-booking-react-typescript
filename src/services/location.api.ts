@@ -29,6 +29,25 @@ export const getLocationListApi = async (
   }
 };
 
+export const postLocationsApi = async (data: Location): Promise<Location> => {
+  try {
+    const response = await api.post<BaseApiResponse<Location>>(`vi-tri/`, data);
+    return response.data.content;
+  } catch (error) {
+    console.log("🎄 ~ postLocationsApi ~ error:", error);
+    throw error;
+  }
+};
+
+export const deleteLocationsApi = async (id: number) => {
+  try {
+    await api.delete(`vi-tri/${id}`);
+  } catch (error) {
+    console.log("🎄 ~ deleteLocationsApi ~ error:", error);
+    throw error;
+  }
+};
+
 
 // apiProvince
 export const getProvinceApi = async (depth?: 'lv2'): Promise<ProvinceItem[]> => {

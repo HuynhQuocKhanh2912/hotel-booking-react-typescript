@@ -1,9 +1,15 @@
 import type { Location, PagiLocation } from "@/interfaces/location.interface";
-import { getLocation, getLocationListApi, getProvinceApi } from "@/services/location.api";
+import { deleteLocationsApi, getLocation, getLocationListApi, getProvinceApi, postLocationsApi } from "@/services/location.api";
+import { useLocationAdminStore } from "@/stores/locationManagement.store";
+import { showSwal } from "@/utils/swal";
 import {
   useQuery,
+  type UseMutationOptions,
   type UseQueryOptions,
+  useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 
 export const useLocationListAllQuery = () =>
   useQuery({
@@ -33,6 +39,70 @@ export const useLocationListQuery = (
     ...optional,
   });
 
+export const useLocationAddQuery = (
+  optional?: Partial<
+    Omit<
+      UseMutationOptions<Location, AxiosError, Location, unknown>,
+      "mutationFn"
+    >
+  >
+) => {
+  const queryClient = useQueryClient();
+  const { setIsModal } = useLocationAdminStore();
+
+  return useMutation({
+    mutationFn: postLocationsApi,
+    onSuccess: () => {
+      setIsModal();
+      queryClient.invalidateQueries({ queryKey: ["location-list"] });
+      queryClient.invalidateQueries({ queryKey: ["location-list-all"] });
+      showSwal({
+        title: "Thêm thành công",
+      });
+    },
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
+      setIsModal();
+      showSwal({
+        title: "Thêm thất bại",
+        text: content,
+        icon: "error",
+      });
+    },
+    ...optional,
+  });
+};
+
+export const useLocationDeleteQuery = (
+  optional?: Partial<Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">>
+) => {
+  const queryClient = useQueryClient();
+  const { setIsModal } = useLocationAdminStore();
+
+  return useMutation({
+    mutationFn: deleteLocationsApi,
+    onSuccess: () => {
+      setIsModal();
+      queryClient.invalidateQueries({ queryKey: ["location-list"] });
+      queryClient.invalidateQueries({ queryKey: ["location-list-all"] });
+      showSwal({
+        title: "Xoá thành công",
+      });
+    },
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
+      setIsModal();
+      showSwal({
+        title: "Xoá thất bại",
+        text: content,
+        icon: "error",
+      });
+    },
+    ...optional,
+  });
+};
 
 export const useProvinceQuery = () =>
   useQuery({
