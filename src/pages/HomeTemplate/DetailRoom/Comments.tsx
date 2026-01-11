@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import type { FC } from "react";
 import { Star, ThumbsUp, MoreVertical, Send } from "lucide-react";
-import { addComments, getCommentsList } from "@/services/comments.api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { addComment, getCommentsList } from "@/services/comments.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
 import type { CommentsID } from "@/interfaces/commentsID.interface";
 import { Button } from "@/components/ui/button";
@@ -14,15 +14,10 @@ import { formatISO } from "date-fns";
 import { useAuthStore } from "@/stores/auth.store";
 import type { CommentsList } from "@/interfaces/comment.interface";
 
-// interface InputComments {
-//   maPhong: number;
-//   maNguoiBinhLuan: number;
-//   ngayBinhLuan: string;
-//   noiDung: string;
-//   saoBinhLuan: number;
-// }
-
 const MovieReviewSection: FC = () => {
+  const queryClient = useQueryClient();
+  const [rating, setRating] = useState<number>(5);
+
   const idRoom = useRoomDetail((state) => state.roomID);
   const { user } = useAuthStore();
 
@@ -104,39 +99,45 @@ const MovieReviewSection: FC = () => {
     setCountComments((prev) => prev + 5);
   };
   // post comment form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CommentsList>();
+  const { register, handleSubmit } = useForm<CommentsList>();
 
   const { mutate: handlePostComments } = useMutation({
-    mutationFn: (data: CommentsList) => addComments(data),
+    mutationFn: addComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["commentsList", idRoom?.id],
+      });
+    },
   });
 
   const onSubmit = (data: CommentsList) => {
-    const payload = {
+    if (!idRoom?.id || !user?.user.id) return;
+    const payload: CommentsList = {
       ...data,
       ngayBinhLuan: formatISO(new Date()),
-      maPhong: idRoom?.id,
-      maNguoiBinhLuan: user?.user.id,
-      saoBinhLuan: 1,
+      maPhong: idRoom.id,
+      maNguoiBinhLuan: user.user.id,
+      saoBinhLuan: rating,
     };
     handlePostComments(payload);
-    console.log(payload);
   };
 
-  const renderStars = (rating: number) => {
+  const renderStars = (ratingValue: number, onChange?: (v: number) => void) => {
     return (
-      <div className="flex gap-0.5">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={14}
-            className={
-              i < rating ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
-            }
-          />
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            type="button"
+            key={star}
+            onClick={() => onChange?.(star)}
+            className="cursor-pointer"
+          >
+            <Star
+              size={20}
+              className={ star <= ratingValue ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
+              }
+            />
+          </button>
         ))}
       </div>
     );
@@ -188,24 +189,20 @@ const MovieReviewSection: FC = () => {
               </Label>
 
               <div className="flex items-center gap-4">
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Button
-                      key={star}
-                      variant="ghost"
-                      size="icon"
-                      className="hover:scale-125 transition-transform"
-                    >
-                      <Star className="h-8 w-8 text-muted-foreground hover:fill-yellow-400 hover:text-yellow-400" />
-                    </Button>
-                  ))}
-                </div>
-
+                {renderStars(rating, setRating)}
                 <Badge
                   variant="secondary"
                   className="bg-purple-100 text-purple-700 px-4 py-1"
                 >
-                  Tuyệt vời!
+                  {rating === 5
+                    ? "Tuyệt vời!"
+                    : rating === 4
+                      ? "Rất tốt"
+                      : rating === 3
+                        ? "Tạm ổn"
+                        : rating === 2
+                          ? "Chưa tốt"
+                          : "Rất tệ"}
                 </Badge>
               </div>
             </div>
