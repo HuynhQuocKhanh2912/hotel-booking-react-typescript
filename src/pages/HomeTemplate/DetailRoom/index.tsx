@@ -24,7 +24,7 @@ export default function RoomDetail() {
 
   useEffect(() => {
     if (roomDetail) setRoomDetail(roomDetail);
-  }, [roomDetail]);
+  }, [roomDetail, setRoomDetail]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50">

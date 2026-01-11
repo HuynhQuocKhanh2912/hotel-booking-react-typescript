@@ -1,5 +1,11 @@
 import type { Location, PagiLocation } from "@/interfaces/location.interface";
-import { deleteLocationsApi, getLocation, getLocationListApi, getProvinceApi, postLocationsApi } from "@/services/location.api";
+import {
+  deleteLocationsApi,
+  getLocation,
+  getLocationListApi,
+  getProvinceApi,
+  postLocationsApi,
+} from "@/services/location.api";
 import { useLocationAdminStore } from "@/stores/locationManagement.store";
 import { showSwal } from "@/utils/swal";
 import {
@@ -75,7 +81,9 @@ export const useLocationAddQuery = (
 };
 
 export const useLocationDeleteQuery = (
-  optional?: Partial<Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">>
+  optional?: Partial<
+    Omit<UseMutationOptions<unknown, Error, unknown, unknown>, "mutationFn">
+  >
 ) => {
   const queryClient = useQueryClient();
   const { setIsModal } = useLocationAdminStore();
