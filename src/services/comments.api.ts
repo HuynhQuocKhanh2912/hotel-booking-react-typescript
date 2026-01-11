@@ -17,7 +17,7 @@ export const getCommentsList = async (
   }
 };
 
-export const addComments = async (data: CommentsList) => {
+export const addComment = async (data: CommentsList) => {
   try {
     const response = await api.post<BaseApiResponse<CommentsList>>(
       "/binh-luan",

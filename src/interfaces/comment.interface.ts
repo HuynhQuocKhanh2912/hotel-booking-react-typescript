@@ -2,7 +2,7 @@ export interface CommentsList {
   id: number;
   maPhong: number;
   maNguoiBinhLuan: number;
-  ngayBinhLuan: Date;
+  ngayBinhLuan: string;
   noiDung: string;
   saoBinhLuan: number;
 }
