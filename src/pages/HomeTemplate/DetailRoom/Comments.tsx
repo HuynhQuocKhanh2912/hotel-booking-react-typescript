@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { formatISO } from "date-fns";
 import { useAuthStore } from "@/stores/auth.store";
 import type { CommentsList } from "@/interfaces/comment.interface";
+import { useRelativeTime } from "@/hooks/useRelativeTime";
 
 const MovieReviewSection: FC = () => {
   const queryClient = useQueryClient();
@@ -20,6 +21,7 @@ const MovieReviewSection: FC = () => {
 
   const idRoom = useRoomDetail((state) => state.roomID);
   const { user } = useAuthStore();
+  const { formatDate } = useRelativeTime();
 
   const [expandedComments, setExpandedComments] = useState<Set<number>>(
     new Set()
@@ -68,19 +70,6 @@ const MovieReviewSection: FC = () => {
       return newSet;
     });
   };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diff < 60) return "Vừa xong";
-    if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
-    if (diff < 604800) return `${Math.floor(diff / 86400)} ngày trước`;
-
-    return date.toLocaleDateString("vi-VN");
-  };
   // State quản lý số comment hiển thị
   const [countComments, setCountComments] = useState(5);
   const visibleComments = useMemo(() => {
@@ -120,6 +109,7 @@ const MovieReviewSection: FC = () => {
       saoBinhLuan: rating,
     };
     handlePostComments(payload);
+    // console.log(payload);
   };
 
   const renderStars = (ratingValue: number, onChange?: (v: number) => void) => {
@@ -134,7 +124,10 @@ const MovieReviewSection: FC = () => {
           >
             <Star
               size={20}
-              className={ star <= ratingValue ? "fill-yellow-500 text-yellow-500" : "text-gray-300"
+              className={
+                star <= ratingValue
+                  ? "fill-yellow-500 text-yellow-500"
+                  : "text-gray-300"
               }
             />
           </button>
@@ -187,7 +180,6 @@ const MovieReviewSection: FC = () => {
               <Label className="text-sm font-semibold text-gray-700">
                 Đánh giá của bạn <span className="text-red-500">*</span>
               </Label>
-
               <div className="flex items-center gap-4">
                 {renderStars(rating, setRating)}
                 <Badge
