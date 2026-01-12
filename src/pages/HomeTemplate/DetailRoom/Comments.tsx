@@ -108,9 +108,7 @@ const MovieReviewSection: FC = () => {
       maNguoiBinhLuan: user.user.id,
       saoBinhLuan: rating,
     };
-    // handlePostComments(payload);
-    console.log(payload);
-
+    handlePostComments(payload);
     reset();
     setRating(5);
   };

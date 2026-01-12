@@ -37,6 +37,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuthStore } from "@/stores/auth.store";
+import { Navigate } from "react-router-dom";
 
 export const description = "An interactive area chart";
 const chartData = [
@@ -238,6 +240,17 @@ const DashboardOverview = () => {
     startDate.setDate(startDate.getDate() - daysToSubtract);
     return date >= startDate;
   });
+  const { user } = useAuthStore();
+
+  // if (user && user.user.role === "ADMIN") {
+  //   return <Navigate to="/dashboard" />;
+  // }
+  // if (user && user.user.role === "USER") {
+  //   return <Navigate to="/" />;
+  // }
+  if (!user) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <>
@@ -245,7 +258,9 @@ const DashboardOverview = () => {
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg text-white">
         <div className="flex max-md:flex-col-reverse max-md:text-center items-center md:justify-between">
           <div>
-            <h1 className="text-xl md:text-3xl font-bold md:mb-2">Xin chào, Admin! 👋</h1>
+            <h1 className="text-xl md:text-3xl font-bold md:mb-2">
+              Xin chào, Admin! 👋
+            </h1>
             <p className="text-blue-100 max-md:hidden">
               Đây là tổng quan hệ thống của bạn hôm nay
             </p>
