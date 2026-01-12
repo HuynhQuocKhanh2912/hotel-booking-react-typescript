@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Star, Shield, MessageCircle, Phone, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, Watch } from "react-hook-form";
 import { useAuthStore } from "@/stores/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { bookingRoom } from "@/services/bookingRoom.api";
@@ -30,8 +30,7 @@ today.setHours(0, 0, 0, 0);
 
 const schema = z
   .object({
-    maPhong: z.number().min(1, "Mã phòng không được để trống"),
-
+    maPhong: z?.number().min(1, "Mã phòng không được để trống"),
     ngayDen: z
       .date()
       .nullable()
@@ -70,19 +69,32 @@ export default function BookingForm() {
   const {
     handleSubmit,
     setValue,
+    reset,
+    watch,
     control,
     formState: { errors },
   } = useForm<BookingFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      // id: 0,
       maPhong: 0,
-      // ngayDen: null,
-      // ngayDi: null,
       soLuongKhach: 0,
       maNguoiDung: 0,
     },
   });
+
+  // total day
+  const dayStart = watch("ngayDen");
+  const dayEnd = watch("ngayDi");
+  const countDay = useMemo(() => {
+    if (!dayStart || !dayEnd) return 0;
+    const start = new Date(dayStart);
+    const end = new Date(dayEnd);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+    const diffTime = end.getTime() - start.getTime();
+    const diffDay = diffTime / (1000 * 60 * 60 * 24);
+    return diffDay > 0 ? diffDay : 0;
+  }, [dayStart, dayEnd]);
 
   useEffect(() => {
     if (room?.id) {
@@ -97,7 +109,7 @@ export default function BookingForm() {
     mutationFn: (data: BookingFormData) => bookingRoom(data),
     onSuccess: () => {
       Swal.fire({
-        title: "Drag me!",
+        title: "Đặt Phòng Thành Công",
         icon: "success",
         draggable: true,
       });
@@ -107,6 +119,8 @@ export default function BookingForm() {
 
   const onsubmit = (data: BookingFormData) => {
     handleBooking(data);
+    // console.log(data);
+    reset();
   };
 
   return (
@@ -303,7 +317,9 @@ export default function BookingForm() {
           {/* Price Breakdown */}
           <div className="space-y-3 pt-6 border-t border-gray-100">
             <div className="flex justify-between text-gray-700">
-              <span>${room?.giaTien} x 5 đêm</span>
+              <span>
+                ${room?.giaTien} x {countDay} đêm
+              </span>
               <span>${room ? room.giaTien * 5 : 0}</span>
             </div>
             <div className="flex justify-between text-gray-700">
@@ -313,7 +329,7 @@ export default function BookingForm() {
             <div className="flex justify-between font-bold text-lg pt-3 border-t border-gray-200">
               <span>Tổng cộng</span>
               <span className="text-purple-600">
-                ${room ? room.giaTien * 5 + 10 : 0}
+                ${room ? room.giaTien * countDay + 10 : 0}
               </span>
             </div>
           </div>
