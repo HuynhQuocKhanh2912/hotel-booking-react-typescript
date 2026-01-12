@@ -88,7 +88,7 @@ const MovieReviewSection: FC = () => {
     setCountComments((prev) => prev + 5);
   };
   // post comment form
-  const { register, handleSubmit } = useForm<CommentsList>();
+  const { register, handleSubmit, reset } = useForm<CommentsList>();
 
   const { mutate: handlePostComments } = useMutation({
     mutationFn: addComment,
@@ -108,8 +108,11 @@ const MovieReviewSection: FC = () => {
       maNguoiBinhLuan: user.user.id,
       saoBinhLuan: rating,
     };
-    handlePostComments(payload);
-    // console.log(payload);
+    // handlePostComments(payload);
+    console.log(payload);
+
+    reset();
+    setRating(5);
   };
 
   const renderStars = (ratingValue: number, onChange?: (v: number) => void) => {
