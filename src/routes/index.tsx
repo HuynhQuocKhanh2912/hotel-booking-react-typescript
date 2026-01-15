@@ -1,4 +1,5 @@
 import LoadingPage from "@/pages/_Component/LoadingPage";
+import RoomListingApp from "@/pages/HomeTemplate/RoomsLocation";
 import { lazy, Suspense, type FC, type LazyExoticComponent } from "react";
 import { type RouteObject } from "react-router-dom";
 
@@ -72,7 +73,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: "/rooms-location/",
-        // element: withSuspense(RoomsLocation),
+        element: withSuspense(RoomListingApp),
       },
       // {
       //   path: "/sale",
