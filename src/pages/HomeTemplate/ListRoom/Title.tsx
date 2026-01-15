@@ -9,7 +9,7 @@ export default function Title() {
           Ưu đãi đặc biệt hôm nay
         </span>
       </div>
-      <h1 className="text-5xl md:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+      <h1 className="text-5xl md:text-6xl font-bold mb-4 text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-cyan-300">
         Khám Phá Phòng Của Bạn
       </h1>
       <p className="text-xl text-gray-600 max-w-2xl mx-auto">

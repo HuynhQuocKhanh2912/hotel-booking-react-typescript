@@ -1,6 +1,10 @@
 import type { BaseApiResponse } from "@/interfaces/base.interface";
 import api, { apiProvince } from "./api";
-import type { Location, PagiLocation, ProvinceItem } from "@/interfaces/location.interface";
+import type {
+  Location,
+  PagiLocation,
+  ProvinceItem,
+} from "@/interfaces/location.interface";
 
 export const getLocation = async (): Promise<Location[]> => {
   try {
@@ -48,9 +52,15 @@ export const deleteLocationsApi = async (id: number) => {
   }
 };
 
-export const putLocationsApi = async (id: number, data: Location): Promise<Location> => {
+export const putLocationsApi = async (
+  id: number,
+  data: Location
+): Promise<Location> => {
   try {
-    const response = await api.put<BaseApiResponse<Location>>(`vi-tri/${id}`, data);
+    const response = await api.put<BaseApiResponse<Location>>(
+      `vi-tri/${id}`,
+      data
+    );
     return response.data.content;
   } catch (error) {
     console.log("🎄 ~ postLocationsApi ~ error:", error);
@@ -59,17 +69,19 @@ export const putLocationsApi = async (id: number, data: Location): Promise<Locat
 };
 
 // apiProvince
-export const getProvinceApi = async (depth?: 'lv2'): Promise<ProvinceItem[]> => {
+export const getProvinceApi = async (
+  depth?: "lv2"
+): Promise<ProvinceItem[]> => {
   try {
     // const dt = depth ? "?depth=2" : "p/";
     const dt = depth ? "?depth=2" : "";
     const response = await apiProvince.get<ProvinceItem[]>(dt);
-    return response.data
+    return response.data;
   } catch (error) {
-    console.log("🌲 ~ getProvinceApi ~ error:", error)
-    throw error
+    console.log("🌲 ~ getProvinceApi ~ error:", error);
+    throw error;
   }
-}
+};
 // export const getCountryApi = async (): Promise<BaseCountry[]> => {
 //   try {
 //     const response = await apiCountry.get<BaseCountry[]>('countries');

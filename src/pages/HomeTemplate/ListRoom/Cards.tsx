@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export default function RoomListing() {
-  const [province, setProvince] = useState<string>("");
+  const [province, setProvince] = useState<string>();
   const [filteredLocation, setFilterdLocation] = useState<Location[]>([]);
   const [selectID, getSelectID] = useState<string>("");
   const navigate = useNavigate();
@@ -70,13 +70,6 @@ export default function RoomListing() {
     ? (listRoomsLocation ?? [])
     : (listRooms?.data ?? []);
 
-  // useEffect(() => {
-  //   window.scrollTo({
-  //     top: 0,
-  //     behavior: "smooth",
-  //   });
-  // }, [pageIndex]);
-
   // get detail rooms by id
   const handleGetRoomsById = (value: number) => {
     navigate(`/detail-room/${value}`);
@@ -110,7 +103,10 @@ export default function RoomListing() {
                 <label className="block text-sm font-semibold text-gray-700">
                   Tỉnh / Thành phố
                 </label>
-                <Select onValueChange={handleSelectProvince} value={province}>
+                <Select
+                  onValueChange={handleSelectProvince}
+                  value={province || undefined}
+                >
                   <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-blue-400 transition-colors">
                     <SelectValue
                       placeholder="Chọn tỉnh / thành phố"
