@@ -3,7 +3,6 @@ import { Search, Plus, MapPin, Globe, Map } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  useLocationAddQuery,
   useLocationDeleteQuery,
   useLocationListAllQuery,
   useLocationListQuery,
@@ -42,7 +41,7 @@ export default function LocationsManagement() {
     itemLocationPagi,
     keyDebounce
   );
-  const { mutate: mutateDelete } = useLocationDeleteQuery();
+  const { mutate: mutateLocationDelete } = useLocationDeleteQuery();
 
   useEffect(() => {
     const list = dataLocationList?.data ?? [];
@@ -70,14 +69,24 @@ export default function LocationsManagement() {
 
   const handleLocationDelete = (id: number) => {
     if (isModal) {
+      setIsModal();
       setMode(null);
     }
     setTimeout(() => {
       showComfirmSwal({
         text: "Bạn có chắc chắn muốn xóa vị trí này không?",
-        onConfirm: () => mutateDelete(id),
+        onConfirm: () => mutateLocationDelete(id),
       });
     }, 100);
+  };
+
+  const handleLocationEdit = (location: Location) => {
+    setDetailLocation(location);
+    setMode("edit");
+    // modal is open when switching from detail to edit
+    setIsModal();
+    // if (!isModal) {
+    // }
   };
 
   // Stats
@@ -186,8 +195,9 @@ export default function LocationsManagement() {
             <LocationItemGrid
               key={location.id}
               location={location}
-              handleLocationDetail={handleLocationDetail}
               handleLocationDelete={handleLocationDelete}
+              handleLocationDetail={handleLocationDetail}
+              handleLocationEdit={handleLocationEdit}
             />
           ))}
         </div>
@@ -239,17 +249,10 @@ export default function LocationsManagement() {
       {/* Dialog */}
       <Dialog open={isModal} onOpenChange={() => setIsModal()}>
         {mode === "detail" && (
-          <LocationDetailPopup
-            detailLocation={detailLocation}
-            // handleLocationDetail={handleLocationDetail}
-            // getAmenities={getAmenities}
-            // onDelete={handleUserDelete}
-            // onEdit={handleUserEdit}
-          />
+          <LocationDetailPopup detailLocation={detailLocation} />
         )}
-        {/* {mode === "img" && <UserPopupImage />} */}
         {mode === "add" && <LocationPopup mode="add" />}
-        {/* {mode === "edit" && <UserPopup mode="edit" detailUser={detailUser} />} */}
+        {mode === "edit" && <LocationPopup mode="edit" detailLocation={detailLocation} />}
       </Dialog>
     </>
   );

@@ -1,5 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useProvinceQuery, useLocationAddQuery } from "@/hooks/useLocation";
+import { useProvinceQuery, useLocationAddQuery, useLocationEditQuery } from "@/hooks/useLocation";
 import type { Location } from "@/interfaces/location.interface";
 import { TriangleAlert, X } from "lucide-react";
 
@@ -25,21 +26,13 @@ interface LocationPopupProps {
   mode: "add" | "edit";
   detailLocation?: Location | null;
 }
-
-// const baseSchema = z.object({
-//   id: z.number(),
-//   name: z.string().min(1, "Vui lòng nhập họ tên"),
-//   email: z.string().email("Vui lòng nhập đúng định dạng email"),
-//   phone: z.string().regex(/^[0-9]+$/, { message: "Vui lòng nhập số" }),
-//   birthday: z.string().nonempty("Vui lòng nhập ngày sinh"),
-//   gender: z
-//     .boolean()
-//     .optional()
-//     .refine((val) => val !== undefined, {
-//       message: "Vui lòng chọn giới tính",
-//     }),
-//   role: z.string().min(1, "Vui lòng chọn vai trò"),
-// });
+const baseSchema = z.object({
+  id: z.number(),
+  tenViTri: z.string().min(1, "Vui lòng nhập họ tên"),
+  tinhThanh: z.string().min(1, "Vui lòng nhập họ tên"),
+  quocGia: z.string().min(1, "Vui lòng nhập họ tên"),
+  hinhAnh: z.string().min(1, "Vui lòng nhập họ tên"),
+});
 
 // const editSchema = baseSchema.extend({
 //   password: z.string().optional(),
@@ -49,7 +42,7 @@ interface LocationPopupProps {
 //   password: z.string().min(1, "Vui lòng nhập mật khẩu"),
 // });
 
-// type UserForms = z.infer<typeof editSchema>;
+type LocationForms = z.infer<typeof baseSchema>;
 
 export default function LocationPopup({
   detailLocation,
@@ -60,7 +53,7 @@ export default function LocationPopup({
   // Api
   const { data: dataProvince } = useProvinceQuery();
   const { mutate: mutateAdd } = useLocationAddQuery();
-
+  const { mutate: mutateEdit } = useLocationEditQuery();
 
   // const resolverSchema = mode === "add" ? addSchema : editSchema;
   // Form
@@ -70,9 +63,9 @@ export default function LocationPopup({
     control,
     setValue,
     watch,
-    // reset,
+    reset,
     formState: { errors },
-  } = useForm<Location>({
+  } = useForm<LocationForms>({
     defaultValues: {
       id: 0,
       tenViTri: "",
@@ -80,14 +73,25 @@ export default function LocationPopup({
       quocGia: "Việt Nam",
       hinhAnh: "",
     },
-    // resolver: zodResolver(resolverSchema as typeof baseSchema),
+    resolver: zodResolver(baseSchema as typeof baseSchema),
   });
 
   //watch form
   const locationImg = watch("hinhAnh");
 
   const onSubmit = (data: Location) => {
-    mutateAdd(data)
+
+    mutateAdd(data, {
+      onSuccess: () => {
+        reset({
+          id: 0,
+          tenViTri: "",
+          tinhThanh: "",
+          quocGia: "",
+          hinhAnh: "",
+        });
+      },
+    });
   };
 
   return (
@@ -216,7 +220,7 @@ export default function LocationPopup({
                 </label>
                 {locationImg && (
                   <X
-                    onClick={() => setValue("hinhAnh", '')}
+                    onClick={() => setValue("hinhAnh", "")}
                     className="absolute z-2 top-3 right-3 cursor-pointer hover:text-red-400 transition-all duration-300"
                   />
                 )}
