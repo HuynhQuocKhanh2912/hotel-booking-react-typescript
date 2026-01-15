@@ -5,6 +5,7 @@ import {
   getLocationListApi,
   getProvinceApi,
   postLocationsApi,
+  putLocationsApi,
 } from "@/services/location.api";
 import { useLocationAdminStore } from "@/stores/locationManagement.store";
 import { showSwal } from "@/utils/swal";
@@ -86,12 +87,10 @@ export const useLocationDeleteQuery = (
   >
 ) => {
   const queryClient = useQueryClient();
-  const { setIsModal } = useLocationAdminStore();
 
   return useMutation({
     mutationFn: deleteLocationsApi,
     onSuccess: () => {
-      setIsModal();
       queryClient.invalidateQueries({ queryKey: ["location-list"] });
       queryClient.invalidateQueries({ queryKey: ["location-list-all"] });
       showSwal({
@@ -101,9 +100,43 @@ export const useLocationDeleteQuery = (
     onError: (error: AxiosError) => {
       const content = (error.response?.data as { content?: string } | undefined)
         ?.content;
-      setIsModal();
       showSwal({
         title: "Xoá thất bại",
+        text: content,
+        icon: "error",
+      });
+    },
+    ...optional,
+  });
+};
+
+export const useLocationEditQuery = (
+  optional?: Partial<
+    Omit<
+      UseMutationOptions<Location, AxiosError, Location, unknown>,
+      "mutationFn"
+    >
+  >
+) => {
+  const queryClient = useQueryClient();
+  const { setIsModal } = useLocationAdminStore();
+
+  return useMutation({
+    mutationFn: (payload: Location) => putLocationsApi(payload.id, payload),
+    onSuccess: () => {
+      setIsModal();
+      queryClient.invalidateQueries({ queryKey: ["location-list"] });
+      queryClient.invalidateQueries({ queryKey: ["location-list-all"] });
+      showSwal({
+        title: "Sửa thành công",
+      });
+    },
+    onError: (error: AxiosError) => {
+      const content = (error.response?.data as { content?: string } | undefined)
+        ?.content;
+      setIsModal();
+      showSwal({
+        title: "Sửa thất bại",
         text: content,
         icon: "error",
       });

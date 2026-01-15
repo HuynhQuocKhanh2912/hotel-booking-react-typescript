@@ -5,12 +5,14 @@ type LocationItemGridProps = {
   location: Location;
   handleLocationDetail: (location: Location) => void;
   handleLocationDelete: (id: number) => void;
+  handleLocationEdit: (location: Location) => void;
 };
 
 export default function LocationItemGrid({
   location,
   handleLocationDetail,
   handleLocationDelete,
+  handleLocationEdit,
 }: LocationItemGridProps) {
   return (
     <div
@@ -49,7 +51,10 @@ export default function LocationItemGrid({
             Chi tiết
           </button>
           <div className="flex gap-2">
-            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+            <button
+              onClick={() => handleLocationEdit(location)}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
               <Edit className="w-4 h-4" />
             </button>
             <button
