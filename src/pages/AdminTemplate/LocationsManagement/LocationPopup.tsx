@@ -18,9 +18,14 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useProvinceQuery, useLocationAddQuery, useLocationEditQuery } from "@/hooks/useLocation";
+import {
+  useProvinceQuery,
+  useLocationAddQuery,
+  useLocationEditQuery,
+} from "@/hooks/useLocation";
 import type { Location } from "@/interfaces/location.interface";
 import { TriangleAlert, X } from "lucide-react";
+import { useEffect } from "react";
 
 interface LocationPopupProps {
   mode: "add" | "edit";
@@ -28,10 +33,14 @@ interface LocationPopupProps {
 }
 const baseSchema = z.object({
   id: z.number(),
-  tenViTri: z.string().min(1, "Vui lòng nhập họ tên"),
-  tinhThanh: z.string().min(1, "Vui lòng nhập họ tên"),
-  quocGia: z.string().min(1, "Vui lòng nhập họ tên"),
-  hinhAnh: z.string().min(1, "Vui lòng nhập họ tên"),
+  tenViTri: z.string().min(1, "Vui lòng nhập tên"),
+  tinhThanh: z.string().min(1, "Vui lòng nhập tỉnh thành"),
+  quocGia: z.string().min(1, "Vui lòng nhập quốc gia"),
+  // hinhAnh: z.string().min(1, "Vui lòng nhập hình ảnh"),
+  hinhAnh: z.union([
+    z.instanceof(File, { message: "Vui lòng chọn hình ảnh" }),
+    z.string().min(1),
+  ]),
 });
 
 // const editSchema = baseSchema.extend({
@@ -71,28 +80,56 @@ export default function LocationPopup({
       tenViTri: "",
       tinhThanh: "",
       quocGia: "Việt Nam",
-      hinhAnh: "",
+      hinhAnh: undefined,
     },
     resolver: zodResolver(baseSchema as typeof baseSchema),
   });
 
   //watch form
   const locationImg = watch("hinhAnh");
+  const previewUrlImg = (() => {
+    if (!locationImg) return undefined;
 
-  const onSubmit = (data: Location) => {
+    if (locationImg instanceof File) {
+      return URL.createObjectURL(locationImg);
+    }
 
-    mutateAdd(data, {
+    if (typeof locationImg === "string") {
+      return locationImg;
+    }
+
+    return undefined;
+  });
+
+  const onSubmit = (data: LocationForms) => {
+    console.log("🎄 ~ onSubmit ~ data:", data.hinhAnh);
+    const formData = new FormData();
+    formData.append("tenViTri", data.tenViTri);
+    formData.append("tinhThanh", data.tinhThanh);
+    formData.append("quocGia", data.quocGia);
+    formData.append("hinhAnh", data.hinhAnh);
+    mutateAdd(formData, {
       onSuccess: () => {
         reset({
           id: 0,
           tenViTri: "",
           tinhThanh: "",
           quocGia: "",
-          hinhAnh: "",
+          hinhAnh: undefined,
         });
       },
     });
   };
+
+  useEffect(() => {
+    if (detailLocation) {
+      setValue("id", detailLocation?.id);
+      setValue("tenViTri", detailLocation?.tenViTri);
+      setValue("tinhThanh", detailLocation?.tinhThanh);
+      setValue("quocGia", detailLocation?.quocGia);
+      setValue("hinhAnh", detailLocation?.hinhAnh);
+    }
+  }, [detailLocation, setValue]);
 
   return (
     <DialogContent className="sm:max-w-2xl p-0 border-0 rounded-none bg-transparent">
@@ -146,6 +183,12 @@ export default function LocationPopup({
                     </Select>
                   )}
                 />
+                {errors.tinhThanh && (
+                  <p className="text-red-300 text-sm mt-1.5 flex gap-1 items-center">
+                    <TriangleAlert className="size-3.5 animate-fade-in" />
+                    {errors.tinhThanh.message}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="country" className="text-slate-700 mb-2">
@@ -201,7 +244,7 @@ export default function LocationPopup({
                   )}
                   {locationImg && (
                     <img
-                      src={locationImg}
+                      src={previewUrlImg}
                       className="w-full max-h-full object-contain"
                       alt=""
                     />
@@ -212,9 +255,12 @@ export default function LocationPopup({
                     accept=".png,jpeg,.jpg"
                     className="hidden"
                     onChange={(e) => {
-                      const file = e.target.files?.[0] ?? "";
-                      const link = file && URL.createObjectURL(file);
-                      return setValue("hinhAnh", link);
+                      // const file = e.target.files?.[0] ?? "";
+                      // const link = file && URL.createObjectURL(file);
+                      // return setValue("hinhAnh", link);
+                      if (e.target.files?.[0]) {
+                        setValue("hinhAnh", e.target.files[0]);
+                      }
                     }}
                   />
                 </label>
@@ -225,6 +271,12 @@ export default function LocationPopup({
                   />
                 )}
               </div>
+              {errors.hinhAnh && (
+                <p className="text-red-300 text-sm mt-1.5 flex gap-1 items-center">
+                  <TriangleAlert className="size-3.5 animate-fade-in" />
+                  {errors.hinhAnh.message}
+                </p>
+              )}
             </div>
           </div>
 
