@@ -73,7 +73,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: "/rooms-location/",
-        element: withSuspense(RoomListingApp),
+        // element: withSuspense(RoomListingApp),
       },
       // {
       //   path: "/sale",

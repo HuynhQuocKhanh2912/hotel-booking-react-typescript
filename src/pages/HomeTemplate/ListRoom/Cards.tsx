@@ -29,21 +29,14 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export default function RoomListing() {
-  const [province, setProvince] = useState<string>();
-  const [filteredLocation, setFilterdLocation] = useState<Location[]>([]);
+  const [province, setProvince] = useState<string>("");
   const [selectID, getSelectID] = useState<string>("");
+  const [filteredLocation, setFilterdLocation] = useState<Location[]>([]);
   const navigate = useNavigate();
 
   //set pagination
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 9;
-
-  const { data: listRooms } = useQuery({
-    queryKey: ["getListRoom", pageIndex, pageSize],
-    queryFn: () => getRoomListApi(pageIndex, pageSize),
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: true,
-  });
 
   // Get Province
   const { data: locations = [] } = useQuery({
@@ -51,10 +44,13 @@ export default function RoomListing() {
     queryFn: getLocation,
   });
 
-  const { data: listRoomsLocation } = useQuery({
-    queryKey: ["getListRoomsLocation", selectID],
-    queryFn: () => getListRoomByLocation(selectID),
-    enabled: !!selectID,
+  const { data: listRooms } = useQuery({
+    queryKey: ["rooms", pageIndex, pageSize, selectID],
+    queryFn: () =>
+      selectID
+        ? getListRoomByLocation(selectID)
+        : getRoomListApi(pageIndex, pageSize),
+    placeholderData: keepPreviousData,
   });
 
   const handleSelectProvince = (val: string): void => {
@@ -64,11 +60,10 @@ export default function RoomListing() {
   };
   const handleGetIDLocation = (e: string) => {
     getSelectID(e);
+    setPageIndex(1);
   };
 
-  const roomsToRender = selectID
-    ? (listRoomsLocation ?? [])
-    : (listRooms?.data ?? []);
+  const roomsToRender = listRooms?.data ?? listRooms ?? [];
 
   // get detail rooms by id
   const handleGetRoomsById = (value: number) => {
@@ -89,72 +84,95 @@ export default function RoomListing() {
         </div>
 
         {/* Location Filter */}
-        <Card className="mb-10 border border-gray-200 shadow-lg bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-gray-200">
-              <Filter className="w-5 h-5 text-blue-600" />
-              <span className="font-bold text-gray-900 text-xl">
-                Lọc tìm kiếm
-              </span>
+        <Card className="mb-10 bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300 pt-0">
+          <CardContent className="p-0">
+            {/* Header with Gradient */}
+            <div className="relative bg-linear-to-r from-blue-600 via-indigo-600 to-blue-600 px-8 py-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-white/20 rounded-lg">
+                  <Filter className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">
+                    Tìm kiếm địa điểm
+                  </h2>
+                  <p className="text-blue-100 text-sm mt-1">
+                    Lọc theo khu vực và vị trí của bạn
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Province Select */}
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Tỉnh / Thành phố
-                </label>
-                <Select
-                  onValueChange={handleSelectProvince}
-                  value={province || undefined}
-                >
-                  <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-blue-400 transition-colors">
-                    <SelectValue
-                      placeholder="Chọn tỉnh / thành phố"
-                      className="w-full"
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {locations.map((add) => (
-                        <SelectItem key={add.id} value={add.tinhThanh}>
-                          {add.tinhThanh}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+
+            {/* Content */}
+            <div className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                {/* Province Select */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-bold text-gray-900">
+                      Tỉnh / Thành phố
+                    </label>
+                    <span className="text-red-500">*</span>
+                  </div>
+                  <Select onValueChange={handleSelectProvince} value={province}>
+                    <SelectTrigger className="w-full h-12 border-2 border-slate-200 bg-linear-to-r from-slate-50 to-slate-100 rounded-xl hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800 font-medium">
+                      <SelectValue placeholder="Chọn tỉnh / thành phố" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        {locations
+                          .filter((l) => l.tinhThanh?.trim())
+                          .map((add) => (
+                            <SelectItem key={add.id} value={add.tinhThanh}>
+                              {add.tinhThanh}
+                            </SelectItem>
+                          ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Bắt đầu bằng cách chọn khu vực của bạn
+                  </p>
+                </div>
+
+                {/* Location Select */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-bold text-gray-900">
+                      Vị trí cụ thể
+                    </label>
+                    <span className="text-red-500">*</span>
+                  </div>
+                  <Select value={selectID} onValueChange={handleGetIDLocation}>
+                    <SelectTrigger className="w-full h-12 border-2 border-slate-200 bg-linear-to-r from-slate-50 to-slate-100 rounded-xl hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-800 font-medium disabled:opacity-50">
+                      <SelectValue
+                        placeholder={
+                          province ? "Chọn vị trí" : "Vui lòng chọn tỉnh trước"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl">
+                      <SelectGroup>
+                        {filteredLocation
+                          .filter((l) => l.id != null)
+                          .map((location) => (
+                            <SelectItem
+                              key={location.id}
+                              value={String(location.id)}
+                            >
+                              {location.tenViTri}
+                            </SelectItem>
+                          ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">
+                    Chọn vị trí cụ thể sau khi chọn tỉnh
+                  </p>
+                </div>
               </div>
 
-              {/* Location Select */}
-              <div className="space-y-3">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Vị trí
-                </label>
-                <Select
-                  disabled={!province}
-                  onValueChange={(value) => handleGetIDLocation(value)}
-                >
-                  <SelectTrigger className="w-full h-12 border-2 border-gray-200 hover:border-blue-400 transition-colors disabled:opacity-50">
-                    <SelectValue
-                      placeholder={
-                        province ? "Chọn vị trí" : "Vui lòng chọn tỉnh trước"
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {filteredLocation.map((location) => (
-                        <SelectItem
-                          key={location.id}
-                          value={location.id.toString()}
-                        >
-                          {location.tenViTri}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Action Buttons */}
             </div>
           </CardContent>
         </Card>
