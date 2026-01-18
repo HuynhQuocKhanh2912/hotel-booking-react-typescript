@@ -1,5 +1,5 @@
 export interface CommentsList {
-  id: number;
+  id?: number;
   maPhong: number;
   maNguoiBinhLuan: number;
   ngayBinhLuan: string;

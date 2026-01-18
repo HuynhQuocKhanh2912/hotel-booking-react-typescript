@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRoomDetail } from "@/stores/useRoomDetails.store";
-import { Controller, useForm, Watch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useAuthStore } from "@/stores/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { bookingRoom } from "@/services/bookingRoom.api";
@@ -55,7 +55,7 @@ const schema = z
     {
       path: ["ngayDi"],
       message: "Ngày trả phòng phải sau ngày nhận phòng",
-    }
+    },
   );
 
 type BookingFormData = z.infer<typeof schema>;
@@ -77,6 +77,8 @@ export default function BookingForm() {
     resolver: zodResolver(schema),
     defaultValues: {
       maPhong: 0,
+      ngayDen: null,
+      ngayDi: null,
       soLuongKhach: 0,
       maNguoiDung: 0,
     },
@@ -119,7 +121,7 @@ export default function BookingForm() {
 
   const onsubmit = (data: BookingFormData) => {
     handleBooking(data);
-    // console.log(data);
+    console.log(data);
     reset();
   };
 
@@ -190,9 +192,10 @@ export default function BookingForm() {
                               captionLayout="dropdown"
                               onSelect={(date) => {
                                 if (!date) return;
-                                date.setHours(12, 0, 0, 0);
+                                const normalizedDate = new Date(date);
+                                normalizedDate.setHours(12, 0, 0, 0);
                                 setOpen1(false);
-                                field.onChange(date);
+                                field.onChange(normalizedDate);
                               }}
                             />
                           </PopoverContent>
@@ -242,9 +245,10 @@ export default function BookingForm() {
                               captionLayout="dropdown"
                               onSelect={(date) => {
                                 if (!date) return;
-                                date.setHours(12, 0, 0, 0);
+                                const normalizedDate = new Date(date);
+                                normalizedDate.setHours(12, 0, 0, 0);
                                 setOpen2(false);
-                                field.onChange(date);
+                                field.onChange(normalizedDate);
                               }}
                             />
                           </PopoverContent>
@@ -320,7 +324,7 @@ export default function BookingForm() {
               <span>
                 ${room?.giaTien} x {countDay} đêm
               </span>
-              <span>${room ? room.giaTien * 5 : 0}</span>
+              <span>${room ? room.giaTien * countDay : 0}</span>
             </div>
             <div className="flex justify-between text-gray-700">
               <span>Phí dịch vụ</span>
