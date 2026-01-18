@@ -14,6 +14,14 @@ import { formatISO } from "date-fns";
 import { useAuthStore } from "@/stores/auth.store";
 import type { CommentsList } from "@/interfaces/comment.interface";
 import { useRelativeTime } from "@/hooks/useRelativeTime";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  noiDung: z.string().nonempty("Chưa có bình luận"),
+});
+
+type FormComment = z.infer<typeof schema>;
 
 const MovieReviewSection: FC = () => {
   const queryClient = useQueryClient();
@@ -24,10 +32,10 @@ const MovieReviewSection: FC = () => {
   const { formatDate } = useRelativeTime();
 
   const [expandedComments, setExpandedComments] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
   const [clampedComments, setClampedComments] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
 
   const { data: listComments, isPending } = useQuery<CommentsID[] | undefined>({
@@ -44,7 +52,7 @@ const MovieReviewSection: FC = () => {
 
   const checkClamped = (
     element: HTMLParagraphElement | null,
-    commentId: number
+    commentId: number,
   ) => {
     if (
       !element ||
@@ -88,7 +96,12 @@ const MovieReviewSection: FC = () => {
     setCountComments((prev) => prev + 5);
   };
   // post comment form
-  const { register, handleSubmit, reset } = useForm<CommentsList>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormComment>({ resolver: zodResolver(schema) });
 
   const { mutate: handlePostComments } = useMutation({
     mutationFn: addComment,
@@ -99,7 +112,7 @@ const MovieReviewSection: FC = () => {
     },
   });
 
-  const onSubmit = (data: CommentsList) => {
+  const onSubmit = (data: FormComment) => {
     if (!idRoom?.id || !user?.user.id) return;
     const payload: CommentsList = {
       ...data,
@@ -109,6 +122,8 @@ const MovieReviewSection: FC = () => {
       saoBinhLuan: rating,
     };
     handlePostComments(payload);
+    // console.log(payload);
+
     reset();
     setRating(5);
   };
@@ -211,7 +226,7 @@ const MovieReviewSection: FC = () => {
                   className="min-h-[120px] resize-none"
                   {...register("noiDung")}
                 />
-
+                {errors.noiDung && <span>{errors.noiDung.message}</span>}
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Mô tả chi tiết sẽ giúp người khác hơn</span>
                   <span>0/500</span>

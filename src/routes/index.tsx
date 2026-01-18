@@ -1,5 +1,5 @@
 import LoadingPage from "@/pages/_Component/LoadingPage";
-import RoomListingApp from "@/pages/HomeTemplate/RoomsLocation";
+// import RoomListingApp from "@/pages/HomeTemplate/RoomsLocation";
 import { lazy, Suspense, type FC, type LazyExoticComponent } from "react";
 import { type RouteObject } from "react-router-dom";
 
