@@ -121,13 +121,12 @@ export default function BookingForm() {
 
   const onsubmit = (data: BookingFormData) => {
     handleBooking(data);
-    console.log(data);
     reset();
   };
 
   return (
     <div className="lg:col-span-1">
-      <div className="sticky top-6">
+      <div className="sticky top-16">
         <div className="bg-white rounded-3xl p-8 shadow-2xl border-2 border-purple-100">
           {/* Price */}
           <div className="mb-8 pb-6 border-b border-gray-200">

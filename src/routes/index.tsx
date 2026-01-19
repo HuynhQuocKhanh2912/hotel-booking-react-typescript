@@ -16,22 +16,22 @@ const AboutPage = lazy(() => import("@/pages/HomeTemplate/About"));
 const ContactPage = lazy(() => import("@/pages/HomeTemplate/Contact"));
 const DetailRoom = lazy(() => import("@/pages/HomeTemplate/DetailRoom"));
 const LocationPage = lazy(() => import("@/pages/HomeTemplate/Location"));
-// const RoomsLocation = lazy(() => import("@/pages/HomeTemplate/RoomsLocation"));
+const RoomsLocation = lazy(() => import("@/pages/HomeTemplate/RoomsLocation"));
 // const SalePage = lazy(() => import("@/pages/HomeTemplate/Sale"));
 const UsersManagement = lazy(
-  () => import("@/pages/AdminTemplate/UsersManagement")
+  () => import("@/pages/AdminTemplate/UsersManagement"),
 );
 const LocationsManagement = lazy(
-  () => import("@/pages/AdminTemplate/LocationsManagement")
+  () => import("@/pages/AdminTemplate/LocationsManagement"),
 );
 const RoomsManagement = lazy(
-  () => import("@/pages/AdminTemplate/RoomsManagement")
+  () => import("@/pages/AdminTemplate/RoomsManagement"),
 );
 const CommentsManagement = lazy(
-  () => import("@/pages/AdminTemplate/CommentsManagement")
+  () => import("@/pages/AdminTemplate/CommentsManagement"),
 );
 const BookingsManagement = lazy(
-  () => import("@/pages/AdminTemplate/BookingsManagement")
+  () => import("@/pages/AdminTemplate/BookingsManagement"),
 );
 
 const withSuspense = (Component: LazyExoticComponent<FC>) => {
@@ -72,8 +72,8 @@ export const routes: RouteObject[] = [
         element: withSuspense(LocationPage),
       },
       {
-        path: "/rooms-location/",
-        // element: withSuspense(RoomListingApp),
+        path: "/rooms-location/:id",
+        element: withSuspense(RoomsLocation),
       },
       // {
       //   path: "/sale",
