@@ -25,7 +25,7 @@ import {
 } from "@/hooks/useLocation";
 import type { Location } from "@/interfaces/location.interface";
 import { TriangleAlert, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface LocationPopupProps {
   mode: "add" | "edit";
@@ -87,19 +87,41 @@ export default function LocationPopup({
 
   //watch form
   const locationImg = watch("hinhAnh");
-  const previewUrlImg = (() => {
-    if (!locationImg) return undefined;
+  const [previewUrlImg, setPreviewUrlImg] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    let currentUrl = previewUrlImg;
+
+    if (!locationImg) {
+      setPreviewUrlImg(undefined);
+      return;
+    }
 
     if (locationImg instanceof File) {
-      return URL.createObjectURL(locationImg);
+      // Revoke previous blob URL to prevent memory leaks
+      if (currentUrl && currentUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(currentUrl);
+      }
+      const newUrl = URL.createObjectURL(locationImg);
+      setPreviewUrlImg(newUrl);
+      currentUrl = newUrl;
+    } else if (typeof locationImg === "string") {
+      // Revoke previous blob URL if switching from file to string
+      if (currentUrl && currentUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(currentUrl);
+      }
+      setPreviewUrlImg(locationImg);
+      currentUrl = locationImg;
     }
 
-    if (typeof locationImg === "string") {
-      return locationImg;
-    }
-
-    return undefined;
-  });
+    // Cleanup function to revoke blob URL when component unmounts
+    return () => {
+      if (currentUrl && currentUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(currentUrl);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationImg]);
 
   const onSubmit = (data: LocationForms) => {
     console.log("🎄 ~ onSubmit ~ data:", data.hinhAnh);
