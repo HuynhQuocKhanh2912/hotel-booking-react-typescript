@@ -84,9 +84,9 @@ export default function LocationsManagement() {
     setDetailLocation(location);
     setMode("edit");
     // modal is open when switching from detail to edit
-    setIsModal();
     // if (!isModal) {
-    // }
+      // }
+      setIsModal();
   };
 
   // Stats

@@ -14,6 +14,7 @@ export default function LocationItemGrid({
   handleLocationDelete,
   handleLocationEdit,
 }: LocationItemGridProps) {
+  console.log("location:", location.hinhAnh);
   return (
     <div
       key={location.id}

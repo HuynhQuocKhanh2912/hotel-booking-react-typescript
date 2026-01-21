@@ -25,7 +25,7 @@ import {
 } from "@/hooks/useLocation";
 import type { Location } from "@/interfaces/location.interface";
 import { TriangleAlert, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface LocationPopupProps {
   mode: "add" | "edit";
@@ -86,42 +86,51 @@ export default function LocationPopup({
   });
 
   //watch form
-  const locationImg = watch("hinhAnh");
-  const [previewUrlImg, setPreviewUrlImg] = useState<string | undefined>(undefined);
+  // const locationImg = watch("hinhAnh");
+  // const [previewUrlImg, setPreviewUrlImg] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    let currentUrl = previewUrlImg;
+  // useEffect(() => {
+  //   let currentUrl = previewUrlImg;
 
-    if (!locationImg) {
-      setPreviewUrlImg(undefined);
-      return;
+  //   if (!locationImg) {
+  //     setPreviewUrlImg(undefined);
+  //     return;
+  //   }
+
+  //   if (locationImg instanceof File) {
+  //     // Revoke previous blob URL to prevent memory leaks
+  //     if (currentUrl && currentUrl.startsWith('blob:')) {
+  //       URL.revokeObjectURL(currentUrl);
+  //     }
+  //     const newUrl = URL.createObjectURL(locationImg);
+  //     setPreviewUrlImg(newUrl);
+  //     currentUrl = newUrl;
+  //   } else if (typeof locationImg === "string") {
+  //     // Revoke previous blob URL if switching from file to string
+  //     if (currentUrl && currentUrl.startsWith('blob:')) {
+  //       URL.revokeObjectURL(currentUrl);
+  //     }
+  //     setPreviewUrlImg(locationImg);
+  //     currentUrl = locationImg;
+  //   }
+
+  //   // Cleanup function to revoke blob URL when component unmounts
+  //   return () => {
+  //     if (currentUrl && currentUrl.startsWith('blob:')) {
+  //       URL.revokeObjectURL(currentUrl);
+  //     }
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [locationImg]);
+
+  const previewImg = watch("hinhAnh");
+  const previewImgLink = (file: File | string): string => {
+    if (typeof file === "string") {
+      return file;
     }
-
-    if (locationImg instanceof File) {
-      // Revoke previous blob URL to prevent memory leaks
-      if (currentUrl && currentUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(currentUrl);
-      }
-      const newUrl = URL.createObjectURL(locationImg);
-      setPreviewUrlImg(newUrl);
-      currentUrl = newUrl;
-    } else if (typeof locationImg === "string") {
-      // Revoke previous blob URL if switching from file to string
-      if (currentUrl && currentUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(currentUrl);
-      }
-      setPreviewUrlImg(locationImg);
-      currentUrl = locationImg;
-    }
-
-    // Cleanup function to revoke blob URL when component unmounts
-    return () => {
-      if (currentUrl && currentUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(currentUrl);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationImg]);
+    const link = URL.createObjectURL(file);
+    return link;
+  };
 
   const onSubmit = (data: LocationForms) => {
     console.log("🎄 ~ onSubmit ~ data:", data.hinhAnh);
@@ -129,7 +138,9 @@ export default function LocationPopup({
     formData.append("tenViTri", data.tenViTri);
     formData.append("tinhThanh", data.tinhThanh);
     formData.append("quocGia", data.quocGia);
-    formData.append("hinhAnh", data.hinhAnh);
+    if (data.hinhAnh instanceof File) {
+      formData.append("formFile", data.hinhAnh);
+    }
     mutateAdd(formData, {
       onSuccess: () => {
         reset({
@@ -238,7 +249,7 @@ export default function LocationPopup({
                   htmlFor="dropzone-file"
                   className="flex flex-col items-center justify-center w-full h-51 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                 >
-                  {!locationImg && (
+                  {!previewImg && (
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <svg
                         className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
@@ -264,9 +275,9 @@ export default function LocationPopup({
                       </p>
                     </div>
                   )}
-                  {locationImg && (
+                  {previewImg && (
                     <img
-                      src={previewUrlImg}
+                      src={previewImgLink(previewImg)}
                       className="w-full max-h-full object-contain"
                       alt=""
                     />
@@ -281,12 +292,12 @@ export default function LocationPopup({
                       // const link = file && URL.createObjectURL(file);
                       // return setValue("hinhAnh", link);
                       if (e.target.files?.[0]) {
-                        setValue("hinhAnh", e.target.files[0]);
+                        setValue("hinhAnh", e.target.files?.[0]);
                       }
                     }}
                   />
                 </label>
-                {locationImg && (
+                {previewImg && (
                   <X
                     onClick={() => setValue("hinhAnh", "")}
                     className="absolute z-2 top-3 right-3 cursor-pointer hover:text-red-400 transition-all duration-300"
