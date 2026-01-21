@@ -33,9 +33,13 @@ export const getLocationListApi = async (
   }
 };
 
-export const postLocationsApi = async (data: Location): Promise<Location> => {
+export const postLocationsApi = async (data: FormData): Promise<Location> => {
   try {
-    const response = await api.post<BaseApiResponse<Location>>(`vi-tri/`, data);
+    const response = await api.post<BaseApiResponse<Location>>(`vi-tri/`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data.content;
   } catch (error) {
     console.log("🎄 ~ postLocationsApi ~ error:", error);

@@ -49,7 +49,7 @@ export const useLocationListQuery = (
 export const useLocationAddQuery = (
   optional?: Partial<
     Omit<
-      UseMutationOptions<Location, AxiosError, Location, unknown>,
+      UseMutationOptions<Location, AxiosError, FormData, unknown>,
       "mutationFn"
     >
   >
